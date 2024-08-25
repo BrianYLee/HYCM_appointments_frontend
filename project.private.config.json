@@ -1,0 +1,6 @@
+{
+  "projectname": "frontend",
+  "setting": {
+    "compileHotReLoad": true
+  }
+}
