@@ -1,7 +1,8 @@
 export default {
   pages: [
     "pages/index/index",
-    "pages/Home/index"
+    "pages/Home/index",
+    "pages/User/index"
   ],
   window: {
     backgroundTextStyle: "light",
@@ -18,6 +19,10 @@ export default {
       {
         pagePath: 'pages/Home/index',
         text: 'Home'
+      },
+      {
+        pagePath: 'pages/User/index',
+        text: 'User'
       }
     ]
   }
