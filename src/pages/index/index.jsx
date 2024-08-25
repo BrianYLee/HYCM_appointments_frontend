@@ -8,12 +8,14 @@ import './index.scss'
 const Index = () => {
   const env = useEnv();
   const { setTitle } = useNavigationBar({ title: "Taro Hooks" });
+
   const showModal = useModal({
     title: "Taro Hooks Canary!",
     showCancel: false,
     confirmColor: "#8c2de9",
     confirmText: "支持一下"
   });
+  
   const { show } = useToast({ mask: true });
 
   const handleModal = useCallback(() => {

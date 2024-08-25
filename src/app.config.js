@@ -1,7 +1,7 @@
 export default {
   pages: [
     "pages/index/index",
-    "pages/Home/index",
+    "pages/Appointments/index",
     "pages/User/index"
   ],
   window: {
@@ -17,8 +17,8 @@ export default {
         text: 'Taro'
       },
       {
-        pagePath: 'pages/Home/index',
-        text: 'Home'
+        pagePath: 'pages/Appointments/index',
+        text: 'Appointments'
       },
       {
         pagePath: 'pages/User/index',
