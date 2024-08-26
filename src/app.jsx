@@ -1,18 +1,13 @@
-import { Component } from 'react'
-import './app.scss'
+import React from 'react';
+import { AuthProvider } from './context/AuthContext';
 
-class App extends  Component {
+const App = ({ children }) => {
+    console.log("app loaded");
+    return (
+        <AuthProvider>
+            {children}
+        </AuthProvider>
+    );
+};
 
-  componentDidMount() { }
-
-  componentDidShow() { }
-
-  componentDidHide() { }
-
-  // this.props.children 是将要会渲染的页面
-  render() {
-    return this.props.children
-  }
-}
-
-export default App
+export default App;

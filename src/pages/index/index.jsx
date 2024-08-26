@@ -3,10 +3,14 @@ import { View, Text, Button, Image } from "@tarojs/components";
 import { useEnv, useNavigationBar, useModal, useToast } from "taro-hooks";
 import logo from "./hook.png";
 
+import { useAuth } from '../../context/AuthContext';
+
 import './index.scss'
 
 const Index = () => {
   const env = useEnv();
+  const { isAuthenticated, login } = useAuth();
+
   const { setTitle } = useNavigationBar({ title: "Taro Hooks" });
 
   const showModal = useModal({
@@ -24,6 +28,11 @@ const Index = () => {
     });
   }, [show, showModal]);
 
+  if (isAuthenticated) {
+    console.log('Index: user is authenticated');
+  } else {
+    console.log('not authenticated...');
+  }
   return (
     <View className="wrapper">
       <Image className="logo" src={logo} />

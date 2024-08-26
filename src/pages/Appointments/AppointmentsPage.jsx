@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { AppointmentsService } from '../../services/Appointments/AppointmentsService';
 import AppointmentCard from '../../components/AppointmentCard/AppointmentCard';
 import { View, Text } from '@tarojs/components';
 import { useEnv, useNavigationBar, useModal, useToast } from "taro-hooks";
@@ -36,26 +37,41 @@ const apmtInfo2 = {
 }
 
 const AppointmentsPage = () => {
+    const [ appointments, updateAppointments ] = useState({}, [])
     const [ currentPlate, updateCurrentPlate ] = useState('');
     const [ showModal, toggle ] = useState(false);
 
+    // request appointments data
+    const getAppointments = async () => {
+        // check if logged in
+        Taro.getStorage({ key: 'userInfo' }).then((res) => {
+            if (res.data) {
+                setUserInfo(res.data);
+                setIsLoggedIn(true);
+            }
+        }).catch(() => {
+            // No user info in storage
+        });
+    }
+
+    // modal
     const { show } = useToast({ mask: true });
+    const handleCheckIn = (plate) => {
+        updateCurrentPlate(plate);
+        toggle(true);
+    }
     const handleConfirm = () => {
         console.log('modal confirmed');
         toggle(false);
         show({title: "complete!"});
         updateCurrentPlate('')
-    }
-    
+    }    
     const handleCancel = () => {
         console.log('modal cancelled');
         updateCurrentPlate('')
         toggle(false);
     }
-    const handleCheckIn = (plate) => {
-        updateCurrentPlate(plate);
-        toggle(true);
-    }
+
     /*
     const showModal = useModal({
             title: "请确认车牌号",

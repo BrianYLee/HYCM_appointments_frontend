@@ -11,7 +11,11 @@ import 'taro-ui/dist/style/components/flex.scss';
 import 'taro-ui/dist/style/components/button.scss';
 import 'taro-ui/dist/style/components/loading.scss';
 
-const AppointmentCard = ( { note, apmtInfo, handleButtonClick } ) => {
+const AppointmentCard = ( { note, apmtInfo, handleButtonClick, updatePlateState } ) => {
+    const handleClick = ( newPlate ) => {
+        updatePlateState( newPlate );
+    }
+    
     return ( 
         <View className='appointment-card'>
             <AtCard
