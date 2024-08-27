@@ -1,13 +1,13 @@
 import Taro from '@tarojs/taro'
+import { APPOINTMENTS_URL } from '../../constants/config';
 
-const BASE_URL = 'http://localhost:3303';
-
-export const Appointments = async (userInfo) => {
+const getAppointments = async (dateToFetch) => {
+    console.log('AppointmentsService: getAppointments: invoked');
     try {
         const response = await Taro.request({
-            url: `${BASE_URL}/api/appointments`,
+            url: `${APPOINTMENTS_URL}?date=${dateToFetch}`,
             method: 'GET',
-            data: userInfo,
+            //data: userInfo,
             header: {
                 'content-type': 'application/json'
             }
@@ -15,6 +15,8 @@ export const Appointments = async (userInfo) => {
 
         if (response.statusCode === 200) {
             // got appointments data, do something
+            console.log('AppointmentsService: getAppointments: got successful response');
+            console.log(response.data);
             return { success: true, data: response.data };
         } else {
             throw new Error(response.data.message || 'failed to fetch appontments');
@@ -27,3 +29,7 @@ export const Appointments = async (userInfo) => {
         return { success: false, message: error.message };
     }
 };
+
+export default {
+    getAppointments
+}

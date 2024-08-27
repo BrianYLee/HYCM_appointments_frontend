@@ -11,11 +11,7 @@ import 'taro-ui/dist/style/components/flex.scss';
 import 'taro-ui/dist/style/components/button.scss';
 import 'taro-ui/dist/style/components/loading.scss';
 
-const AppointmentCard = ( { note, apmtInfo, handleButtonClick, updatePlateState } ) => {
-    const handleClick = ( newPlate ) => {
-        updatePlateState( newPlate );
-    }
-    
+const AppointmentCard = ( { note = undefined, apmtInfo, handleButtonClick, updatePlateState } ) => {
     return ( 
         <View className='appointment-card'>
             <AtCard
@@ -26,22 +22,14 @@ const AppointmentCard = ( { note, apmtInfo, handleButtonClick, updatePlateState 
             >
                 <View className='at-row'>
                     <View className='at-col at-col-1 at-col--auto'>
-                        { apmtInfo.id && (<View className='infoListing'>ID</View>)}
-                        { apmtInfo.date && (<View className='infoListing'>DATE</View>)}
-                        { apmtInfo.type && (<View className='infoListing'>TYPE</View>)}
-                        { apmtInfo.areas && (<View className='infoListing'>AREAS</View>)}
-                        { apmtInfo.studioName && (<View className='infoListing'>STUDIONAME</View>)}
-                        { apmtInfo.managerName && (<View className='infoListing'>MANAGERNAME</View>)}
-                        { apmtInfo.plate && (<View className='infoListing'>PLATE</View>)}
+                        { apmtInfo.type && (<View className='infoListing'>类型</View>)}
+                        { apmtInfo.studio_name && (<View className='infoListing'>拍摄机构</View>)}
+                        { apmtInfo.manager_name && (<View className='infoListing'>摄影师</View>)}
                     </View>
                     <View className='at-col at-col__offset-1'>
-                        { apmtInfo.id && (<View className='infoListing'>{apmtInfo.id}</View>)}
-                        { apmtInfo.date && (<View className='infoListing'>{apmtInfo.date}</View>)}
                         { apmtInfo.type && (<View className='infoListing'>{apmtInfo.type}</View>)}
-                        { apmtInfo.areas && (<View className='infoListing'>{apmtInfo.areas}</View>)}
-                        { apmtInfo.studioName && (<View className='infoListing'>{apmtInfo.studioName}</View>)}
-                        { apmtInfo.managerName && (<View className='infoListing'>{apmtInfo.managerName}</View>)}
-                        { apmtInfo.plate && (<View className='infoListing'>{apmtInfo.plate}</View>)}
+                        { apmtInfo.studio_name && (<View className='infoListing'>{apmtInfo.studio_name}</View>)}
+                        { apmtInfo.manager_name && (<View className='infoListing'>{apmtInfo.manager_name}</View>)}
                     </View>
                 </View>
             </AtCard>
@@ -50,3 +38,28 @@ const AppointmentCard = ( { note, apmtInfo, handleButtonClick, updatePlateState 
 };
 
 export default AppointmentCard;
+
+/*
+                    <View className='at-col at-col-1 at-col--auto'>
+                        { apmtInfo.id && (<View className='infoListing'>ID</View>)}
+                        { apmtInfo.scheduled_date && (<View className='infoListing'>DATE</View>)}
+                        { apmtInfo.type && (<View className='infoListing'>TYPE</View>)}
+                        { apmtInfo.hotel && (<View className='infoListing'>HOTEL</View>)}
+                        { apmtInfo.golf && (<View className='infoListing'>GOLF</View>)}
+                        { apmtInfo.horse && (<View className='infoListing'>HORSE</View>)}
+                        { apmtInfo.studio_name && (<View className='infoListing'>STUDIONAME</View>)}
+                        { apmtInfo.manager_name && (<View className='infoListing'>MANAGERNAME</View>)}
+                        { apmtInfo.plate && (<View className='infoListing'>PLATE</View>)}
+                    </View>
+                    <View className='at-col at-col__offset-1'>
+                        { apmtInfo.id && (<View className='infoListing'>{apmtInfo.id}</View>)}
+                        { apmtInfo.scheduled_date && (<View className='infoListing'>{apmtInfo.scheduled_date}</View>)}
+                        { apmtInfo.type && (<View className='infoListing'>{apmtInfo.type}</View>)}
+                        { apmtInfo.hotel && (<View className='infoListing'>{apmtInfo.hotel}</View>)}
+                        { apmtInfo.golf && (<View className='infoListing'>{apmtInfo.golf}</View>)}
+                        { apmtInfo.horse && (<View className='infoListing'>{apmtInfo.horse}</View>)}
+                        { apmtInfo.studio_name && (<View className='infoListing'>{apmtInfo.studio_name}</View>)}
+                        { apmtInfo.manager_name && (<View className='infoListing'>{apmtInfo.manager_name}</View>)}
+                        { apmtInfo.plate && (<View className='infoListing'>{apmtInfo.plate}</View>)}
+                    </View>
+*/
