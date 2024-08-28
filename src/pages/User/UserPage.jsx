@@ -4,7 +4,6 @@ import { AtButton } from 'taro-ui'
 import Taro from '@tarojs/taro';
 
 import './UserPage.scss';
-import "taro-ui/dist/style/components/button.scss";
 
 const UserPage = () => {
   const [userInfo, setUserInfo] = useState(null);

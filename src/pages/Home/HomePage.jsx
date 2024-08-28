@@ -6,8 +6,6 @@ import { useEnv, useNavigationBar, useModal, useToast } from "taro-hooks";
 import { AtButton } from 'taro-ui'
 import Taro from '@tarojs/taro';
 
-import "taro-ui/dist/style/components/button.scss";
-
 const HomePage = () => {
     const [userInfo, setUserInfo] = useState(null);
     const [isLoggedIn, setIsLoggedIn] = useState(false);

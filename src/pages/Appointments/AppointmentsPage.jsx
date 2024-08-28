@@ -1,39 +1,36 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import Taro from '@tarojs/taro';
 import CalendarTab from '../../components/CalendarTab';
 import AppointmentsService from '../../services/Appointments/AppointmentsService';
 import AppointmentCard from '../../components/AppointmentCard/AppointmentCard';
 import { View, Text, Image } from '@tarojs/components';
-import { useEnv, useNavigationBar, useModal, useToast } from "taro-hooks";
 import { AtButton, AtDivider, AtModal, AtModalHeader, AtModalContent, AtModalAction } from 'taro-ui'
+
+// loader
+import Loader from '../../components/Loader';
+import { useLoader } from '../../context/LoaderContext';
+
 
 // Appointments page styling
 import './AppointmentsPage.scss'
-import 'taro-ui/dist/style/components/flex.scss';
-import 'taro-ui/dist/style/components/card.scss';
-import 'taro-ui/dist/style/components/divider.scss';
-import 'taro-ui/dist/style/components/modal.scss';
-import 'taro-ui/dist/style/components/article.scss';
-import 'taro-ui/dist/style/components/button.scss';
 
 const AppointmentsPage = () => {
-    const [ loading, setLoading ] = useState(true);
+    const { showLoader, hideLoader } = useLoader();
     const [ selectedDate, setDate ] = useState(new Date().toISOString().split('T')[0]);
     const [ appointments, updateAppointments ] = useState([]);
     const [ currentApmt, updateCurrentApmt ] = useState({});
     const [ showCheckInModal, toggleCheckInModal ] = useState(false);
     const [ showCheckOutModal, toggleCheckOutModal ] = useState(false);
 
-    console.log(selectedDate);
     // request appointments data
     const fetchAndSetAppointments = async () => {
+        showLoader();
         console.log('fetchAndSetAppointments invoked');
-        setLoading(true);
         const res = await AppointmentsService.getAppointments(selectedDate);
         if (res && res.success) {
             updateAppointments(res.data);
         }
-        setLoading(false);
+        hideLoader();
     };
 
     const handlePullDownRefresh = async () => {
@@ -51,17 +48,15 @@ const AppointmentsPage = () => {
         handlePullDownRefresh();
     }, []);
 
-    // modal
-    const { show } = useToast({ mask: true });
-
     // checkin functions
     const handleCheckIn = (apmtObj) => {
         updateCurrentApmt(apmtObj);
         toggleCheckInModal(true);
     }
     const handleCheckInConfirm = async () => {
-        console.log('check-in modal confirmed');
-        console.log(`id = ${currentApmt.id}, plate = ${currentApmt.plate}`);
+        //console.log('check-in modal confirmed');
+        //console.log(`id = ${currentApmt.id}, plate = ${currentApmt.plate}`);
+        showLoader();
         const res = await AppointmentsService.checkIn(currentApmt.id);
         if (res && res.success) {
             Taro.showToast({
@@ -73,6 +68,7 @@ const AppointmentsPage = () => {
                 }
             });
         } else {
+            hideLoader();
             Taro.showToast({
                 title: '签到失败',
                 icon: 'fail',
@@ -89,8 +85,9 @@ const AppointmentsPage = () => {
         toggleCheckOutModal(true);
     }
     const handleCheckOutConfirm = async () => {
-        console.log('check-out modal confirmed');
-        console.log(`id = ${currentApmt.id}, plate = ${currentApmt.plate}`);
+        //console.log('check-out modal confirmed');
+        //console.log(`id = ${currentApmt.id}, plate = ${currentApmt.plate}`);
+        showLoader();
         const res = await AppointmentsService.checkOut(currentApmt.id);
         if (res && res.success) {
             Taro.showToast({
@@ -102,6 +99,7 @@ const AppointmentsPage = () => {
                 }
             });
         } else {
+            hideLoader();
             Taro.showToast({
                 title: '签离失败',
                 icon: 'fail',
@@ -115,15 +113,18 @@ const AppointmentsPage = () => {
     const handleCancel = () => {
         console.log('check-out modal cancelled');
         updateCurrentApmt({})
+        toggleCheckInModal(false);
         toggleCheckOutModal(false);
     }
 
     return (
         <View className='index'>
+            <Loader />
             <CalendarTab currentDate={selectedDate} handleDateChange={setDate}></CalendarTab>
             <AtModal
                 isOpened={showCheckInModal}
                 onClose={() => toggleCheckInModal(false)}
+                closeOnClickOverlay={false}
             >
                 <AtModalHeader>请确认车牌号</AtModalHeader>
                 <AtModalContent>
@@ -137,6 +138,7 @@ const AppointmentsPage = () => {
             <AtModal
                 isOpened={showCheckOutModal}
                 onClose={() => toggleCheckOutModal(false)}
+                closeOnClickOverlay={false}
             >
                 <AtModalHeader>请确取消签到</AtModalHeader>
                 <AtModalContent>

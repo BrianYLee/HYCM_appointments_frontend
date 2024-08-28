@@ -6,10 +6,6 @@ import { AtCard, AtButton} from 'taro-ui'
 
 // styling
 import './AppointmentCard.scss'
-import 'taro-ui/dist/style/components/card.scss'
-import 'taro-ui/dist/style/components/flex.scss';
-import 'taro-ui/dist/style/components/button.scss';
-import 'taro-ui/dist/style/components/loading.scss';
 
 const AppointmentCard = ( { note = undefined, apmtInfo, handleCheckIn, handleCheckOut  } ) => {
     return ( 

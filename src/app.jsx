@@ -1,12 +1,16 @@
 import React from 'react';
 import { AuthProvider } from './context/AuthContext';
+import { LoaderProvider } from './context/LoaderContext';
+import './app.scss';
 
 const App = ({ children }) => {
     console.log("app loaded");
     return (
-        <AuthProvider>
-            {children}
-        </AuthProvider>
+        <LoaderProvider>
+            <AuthProvider>
+                {children}
+            </AuthProvider>
+        </LoaderProvider>
     );
 };
 

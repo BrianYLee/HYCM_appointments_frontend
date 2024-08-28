@@ -1,35 +1,14 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import Taro from '@tarojs/taro';
-import { View, Text } from '@tarojs/components';
-import { AtNavBar, AtCalendar, AtIcon, AtButton, AtFloatLayout } from 'taro-ui';
+import { View } from '@tarojs/components';
+import { AtNavBar, AtCalendar, AtButton, AtFloatLayout } from 'taro-ui';
 
 import "./CalendarTab.scss";
-import "taro-ui/dist/style/components/flex.scss";
-import "taro-ui/dist/style/components/nav-bar.scss";
-import "taro-ui/dist/style/components/icon.scss";
-import "taro-ui/dist/style/components/calendar.scss";
-import "taro-ui/dist/style/components/float-layout.scss";
 
 const CalendarTab = ({ currentDate, handleDateChange }) => {
     const [ selectedDate, setSelectedDate ] = useState(currentDate || 'no date');
     const [ dateChinese, setChineseDate ] = useState('')
     const [ showCalendar, toggleCalendar ] = useState(false)
-
-    const handleLeftClick = () => {
-        Taro.showToast({
-            title: 'left clicked <-',
-            icon: 'success',
-            duration: 1000
-        });
-    }
-
-    const handleRightClick = () => {
-        Taro.showToast({
-            title: 'right clicked ->',
-            icon: 'success',
-            duration: 1000
-        });
-    }
 
     const onCalendarCancel = () => {
         setSelectedDate(currentDate);
@@ -64,7 +43,7 @@ const CalendarTab = ({ currentDate, handleDateChange }) => {
     }, [ currentDate ]);
 
     return (
-        <>
+        <View>
             <AtNavBar
                 fixed
                 onClickRgIconSt={() => (toggleCalendar(true))}
@@ -76,7 +55,7 @@ const CalendarTab = ({ currentDate, handleDateChange }) => {
                 <AtCalendar currentDate={currentDate} format='YYYY-MM-DD' onSelectDate={e => (handleDateSelect(e))} isMultiSelect={false}/>
                 <AtButton type='primary' circle onClick={onDateConfirm.bind(this, 'error')}>Confirm</AtButton>
             </AtFloatLayout>
-        </>
+        </View>
     )
 }
 
