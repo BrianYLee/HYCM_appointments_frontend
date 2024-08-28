@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import Taro from '@tarojs/taro';
+import Modal from '../../components/Modal';
 import CalendarTab from '../../components/CalendarTab';
 import AppointmentsService from '../../services/Appointments/AppointmentsService';
 import AppointmentCard from '../../components/AppointmentCard/AppointmentCard';
 import { View, Text, Image } from '@tarojs/components';
-import { AtButton, AtDivider, AtModal, AtModalHeader, AtModalContent, AtModalAction } from 'taro-ui'
+import { AtDivider } from 'taro-ui'
 
 // loader
 import Loader from '../../components/Loader';
 import { useLoader } from '../../context/LoaderContext';
-
 
 // Appointments page styling
 import './AppointmentsPage.scss'
@@ -38,31 +38,19 @@ const AppointmentsPage = () => {
         Taro.stopPullDownRefresh(); // Stop the pull-down refresh animation
     };
 
-    useEffect(() => {
-        fetchAndSetAppointments(selectedDate);
-    }, [selectedDate]);
-
-    // Add the onPullDownRefresh lifecycle method
-    useEffect(() => {
-        Taro.startPullDownRefresh();
-        handlePullDownRefresh();
-    }, []);
-
     // checkin functions
     const handleCheckIn = (apmtObj) => {
         updateCurrentApmt(apmtObj);
         toggleCheckInModal(true);
     }
     const handleCheckInConfirm = async () => {
-        //console.log('check-in modal confirmed');
-        //console.log(`id = ${currentApmt.id}, plate = ${currentApmt.plate}`);
         showLoader();
         const res = await AppointmentsService.checkIn(currentApmt.id);
         if (res && res.success) {
             Taro.showToast({
                 title: '签到成功',
                 icon: 'success',
-                duration: 1500,
+                duration: 1000,
                 complete: () => {
                     fetchAndSetAppointments();
                 }
@@ -72,7 +60,7 @@ const AppointmentsPage = () => {
             Taro.showToast({
                 title: '签到失败',
                 icon: 'fail',
-                duration: 1500
+                duration: 1000
             });
         }
         toggleCheckInModal(false);
@@ -85,8 +73,6 @@ const AppointmentsPage = () => {
         toggleCheckOutModal(true);
     }
     const handleCheckOutConfirm = async () => {
-        //console.log('check-out modal confirmed');
-        //console.log(`id = ${currentApmt.id}, plate = ${currentApmt.plate}`);
         showLoader();
         const res = await AppointmentsService.checkOut(currentApmt.id);
         if (res && res.success) {
@@ -111,45 +97,48 @@ const AppointmentsPage = () => {
     }
 
     const handleCancel = () => {
-        console.log('check-out modal cancelled');
         updateCurrentApmt({})
         toggleCheckInModal(false);
         toggleCheckOutModal(false);
     }
 
+    useEffect(() => {
+        fetchAndSetAppointments(selectedDate);
+    }, [selectedDate]);
+
+    // Add the onPullDownRefresh lifecycle method
+    useEffect(() => {
+        Taro.startPullDownRefresh();
+        handlePullDownRefresh();
+    }, []);
+
     return (
         <View className='index'>
             <Loader />
             <CalendarTab currentDate={selectedDate} handleDateChange={setDate}></CalendarTab>
-            <AtModal
+            <Modal
                 isOpened={showCheckInModal}
-                onClose={() => toggleCheckInModal(false)}
-                closeOnClickOverlay={false}
-            >
-                <AtModalHeader>请确认车牌号</AtModalHeader>
-                <AtModalContent>
-                    <View className='.at-article__h1 plateNumber'>{currentApmt.plate}</View>
-                </AtModalContent>
-                <AtModalAction className='modal-button-group'>
-                    <AtButton circle type='secondary' onClick={handleCancel}>取消</AtButton>
-                    <AtButton circle type='primary' onClick={handleCheckInConfirm}>确定</AtButton>
-                </AtModalAction>
-            </AtModal>
-            <AtModal
+                title='请确认车牌号'
+                contents={[{className: '.at-article__h1 plateNumber', text: currentApmt.plate}]}
+                cancelText='取消'
+                confirmText='确定'
+                onClose={handleCancel}
+                onCancel={handleCancel}
+                onConfirm={handleCheckInConfirm}
+            />
+            <Modal
                 isOpened={showCheckOutModal}
-                onClose={() => toggleCheckOutModal(false)}
-                closeOnClickOverlay={false}
-            >
-                <AtModalHeader>请确取消签到</AtModalHeader>
-                <AtModalContent>
-                    <View className='.at-article__h2 plateNumber'>确认要取消签到？</View>
-                    <View className='.at-article__h1 plateNumber'>{currentApmt.plate}</View>
-                </AtModalContent>
-                <AtModalAction className='modal-button-group'>
-                    <AtButton circle type='secondary' onClick={handleCancel}>返回</AtButton>
-                    <AtButton circle type='primary' onClick={handleCheckOutConfirm}>取消签到</AtButton>
-                </AtModalAction>
-            </AtModal>
+                title='请确取消签到'
+                contents={[
+                    {className: '.at-article__h2 plateNumber', text: '确认要取消签到？'},
+                    {className: '.at-article__h1 plateNumber', text: currentApmt.plate}
+                ]}
+                cancelText='返回'
+                confirmText='取消签到'
+                onClose={handleCancel}
+                onCancel={handleCancel}
+                onConfirm={handleCheckOutConfirm}
+            />
             {appointments.length > 0 ? (
                 appointments.map(( appointment, idx ) => (
                     <AppointmentCard apmtInfo={appointment} handleCheckIn={handleCheckIn} handleCheckOut={handleCheckOut}/>
@@ -187,4 +176,59 @@ export default AppointmentsPage;
             <AppointmentCard note='note2' apmtInfo={apmtInfo2} handleButtonClick={handleCheckIn}/>
             <AtDivider content='我是有底线的' fontColor='#ccc' lineColor='#ddd' fontSize='24'/>
         </View>
+
+            <AtModal
+                isOpened={showCheckInModal}
+                onClose={() => toggleCheckInModal(false)}
+                closeOnClickOverlay={false}
+            >
+                <AtModalHeader>请确认车牌号</AtModalHeader>
+                <AtModalContent>
+                    <View className='.at-article__h1 plateNumber'>{currentApmt.plate}</View>
+                </AtModalContent>
+                <AtModalAction className='modal-button-group'>
+                    <AtButton circle type='secondary' onClick={handleCancel}>取消</AtButton>
+                    <AtButton circle type='primary' onClick={handleCheckInConfirm}>确定</AtButton>
+                </AtModalAction>
+            </AtModal>
+
+            <AtModal
+                isOpened={showCheckOutModal}
+                onClose={() => toggleCheckOutModal(false)}
+                closeOnClickOverlay={false}
+            >
+                <AtModalHeader>请确取消签到</AtModalHeader>
+                <AtModalContent>
+                    <View className='.at-article__h2 plateNumber'>确认要取消签到？</View>
+                    <View className='.at-article__h1 plateNumber'>{currentApmt.plate}</View>
+                </AtModalContent>
+                <AtModalAction className='modal-button-group'>
+                    <AtButton circle type='secondary' onClick={handleCancel}>返回</AtButton>
+                    <AtButton circle type='primary' onClick={handleCheckOutConfirm}>取消签到</AtButton>
+                </AtModalAction>
+            </AtModal>
+
+            <Modal
+                isOpened={showCheckInModal}
+                title='请确认车牌号'
+                contents={[{className: '.at-article__h1 plateNumber', text: currentApmt.plate}]}
+                cancelText='取消'
+                confirmText='确定'
+                onClose={handleCancel}
+                onCancel={handleCancel}
+                onConfirm={handleCheckInConfirm}
+            />
+            <Modal
+                isOpened={showCheckOutModal}
+                title='请确取消签到'
+                contents={[
+                    {className: '.at-article__h2 plateNumber', text: '确认要取消签到？'},
+                    {className: '.at-article__h1 plateNumber', text: currentApmt.plate}
+                ]}
+                cancelText='返回'
+                confirmText='取消签到'
+                onClose={handleCancel}
+                onCancel={handleCancel}
+                onConfirm={handleCheckOutConfirm}
+            />
 */
