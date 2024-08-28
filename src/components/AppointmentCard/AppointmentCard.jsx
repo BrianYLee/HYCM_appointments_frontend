@@ -11,13 +11,19 @@ import 'taro-ui/dist/style/components/flex.scss';
 import 'taro-ui/dist/style/components/button.scss';
 import 'taro-ui/dist/style/components/loading.scss';
 
-const AppointmentCard = ( { note = undefined, apmtInfo, handleButtonClick, updatePlateState } ) => {
+const AppointmentCard = ( { note = undefined, apmtInfo, handleCheckIn, handleCheckOut  } ) => {
     return ( 
         <View className='appointment-card'>
             <AtCard
                 title={apmtInfo.plate}
-                thumb={apmtInfo.arrived && require('../../images/icons/check.png') || require('../../images/icons/warning.png')}
-                extra={apmtInfo.arrived && (<AtButton onClick={() => handleButtonClick(apmtInfo.plate)} size='small' circle>取消签到</AtButton>) || (<AtButton onClick={() => handleButtonClick(apmtInfo.plate)} size='small' circle type='primary'>签到</AtButton>)}
+                thumb={apmtInfo.checked_in
+                    && require('../../images/icons/check.png')
+                    || require('../../images/icons/warning.png')
+                }
+                extra={apmtInfo.checked_in
+                    && (<AtButton disabled={!(apmtInfo.scheduled_date == new Date().toISOString().split('T')[0])} onClick={() => handleCheckOut(apmtInfo)} size='small' circle>取消签到</AtButton>)
+                    || (<AtButton disabled={!(apmtInfo.scheduled_date == new Date().toISOString().split('T')[0])} onClick={() => handleCheckIn(apmtInfo)} size='small' circle type='primary'>签到</AtButton>)
+                }
                 note={note}
             >
                 <View className='at-row'>
