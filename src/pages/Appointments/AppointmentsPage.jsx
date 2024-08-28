@@ -5,7 +5,7 @@ import CalendarTab from '../../components/CalendarTab';
 import AppointmentsService from '../../services/Appointments/AppointmentsService';
 import AppointmentCard from '../../components/AppointmentCard/AppointmentCard';
 import { View, Text, Image } from '@tarojs/components';
-import { AtDivider } from 'taro-ui'
+import { AtDivider, AtTabs, AtTabsPane } from 'taro-ui'
 
 // loader
 import Loader from '../../components/Loader';
@@ -17,7 +17,10 @@ import './AppointmentsPage.scss'
 const AppointmentsPage = () => {
     const { showLoader, hideLoader } = useLoader();
     const [ selectedDate, setDate ] = useState(new Date().toISOString().split('T')[0]);
+    const [ currentTab, setTab ] = useState(0);
     const [ appointments, updateAppointments ] = useState([]);
+    const [ notArrived, updateNotArrived ] = useState([]);
+    const [ arrived, updateArrived ] = useState([]);
     const [ currentApmt, updateCurrentApmt ] = useState({});
     const [ showCheckInModal, toggleCheckInModal ] = useState(false);
     const [ showCheckOutModal, toggleCheckOutModal ] = useState(false);
@@ -29,6 +32,8 @@ const AppointmentsPage = () => {
         const res = await AppointmentsService.getAppointments(selectedDate);
         if (res && res.success) {
             updateAppointments(res.data);
+            updateNotArrived(res.data.filter( apmt => !apmt.checked_in));
+            updateArrived(res.data.filter( apmt => apmt.checked_in));
         }
         hideLoader();
     };
@@ -112,6 +117,7 @@ const AppointmentsPage = () => {
         handlePullDownRefresh();
     }, []);
 
+    const tabList = [{ title: `未签到 (${notArrived.length})` }, { title: `已签到 (${arrived.length})` }, { title: `全部 (${appointments.length})` }]
     return (
         <View className='index'>
             <Loader />
@@ -139,17 +145,47 @@ const AppointmentsPage = () => {
                 onCancel={handleCancel}
                 onConfirm={handleCheckOutConfirm}
             />
-            {appointments.length > 0 ? (
-                appointments.map(( appointment, idx ) => (
-                    <AppointmentCard apmtInfo={appointment} handleCheckIn={handleCheckIn} handleCheckOut={handleCheckOut}/>
-                ))
-            ) : (
-                <>
-                    <Image className="logo" src={require('../../images/icons/out-of-stock.png')} />
-                    <Text className="title">看来今天没有预约～</Text>
-                </>
-            )}
-            {appointments.length > 0 && (<AtDivider content='没有更多预约啦' fontColor='#ccc' lineColor='#ddd' fontSize='24'/>)}
+            <AtTabs swipeable={false} current={currentTab} tabList={tabList} onClick={setTab.bind(this)}>
+                <AtTabsPane current={currentTab} index={0} >
+                    {notArrived.length > 0 ? (
+                        notArrived.map(( appointment ) => (
+                            <AppointmentCard apmtInfo={appointment} handleCheckIn={handleCheckIn} handleCheckOut={handleCheckOut}/>
+                        ))
+                    ) : (
+                    <View className='no-records'>
+                        <Image className="logo" src={require('../../images/icons/out-of-stock.png')} />
+                        <Text className="title">看来今天没有预约～</Text>
+                    </View>
+                    )}
+                    {notArrived.length > 0 && (<AtDivider content='没有更多预约啦' fontColor='#ccc' lineColor='#ddd' fontSize='24'/>)}
+                </AtTabsPane>
+                <AtTabsPane current={currentTab} index={1}>
+                    {arrived.length > 0 ? (
+                        arrived.map(( appointment ) => (
+                            <AppointmentCard apmtInfo={appointment} handleCheckIn={handleCheckIn} handleCheckOut={handleCheckOut}/>
+                        ))
+                    ) : (
+                    <View className='no-records'>
+                        <Image className="logo" src={require('../../images/icons/out-of-stock.png')} />
+                        <Text className="title">看来今天没有预约～</Text>
+                    </View>
+                    )}
+                    {arrived.length > 0 && (<AtDivider content='没有更多预约啦' fontColor='#ccc' lineColor='#ddd' fontSize='24'/>)}
+                </AtTabsPane>
+                <AtTabsPane current={currentTab} index={2}>
+                    {appointments.length > 0 ? (
+                        appointments.map(( appointment ) => (
+                            <AppointmentCard apmtInfo={appointment} handleCheckIn={handleCheckIn} handleCheckOut={handleCheckOut}/>
+                        ))
+                    ) : (
+                    <View className='no-records'>
+                        <Image className="logo" src={require('../../images/icons/out-of-stock.png')} />
+                        <Text className="title">看来今天没有预约～</Text>
+                    </View>
+                    )}
+                    {appointments.length > 0 && (<AtDivider content='没有更多预约啦' fontColor='#ccc' lineColor='#ddd' fontSize='24'/>)}
+                </AtTabsPane>
+            </AtTabs>
         </View>
     )
 }
@@ -231,4 +267,16 @@ export default AppointmentsPage;
                 onCancel={handleCancel}
                 onConfirm={handleCheckOutConfirm}
             />
+
+            {appointments.length > 0 ? (
+                appointments.map(( appointment, idx ) => (
+                    <AppointmentCard apmtInfo={appointment} handleCheckIn={handleCheckIn} handleCheckOut={handleCheckOut}/>
+                ))
+            ) : (
+                <>
+                    <Image className="logo" src={require('../../images/icons/out-of-stock.png')} />
+                    <Text className="title">看来今天没有预约～</Text>
+                </>
+            )}
+            {appointments.length > 0 && (<AtDivider content='没有更多预约啦' fontColor='#ccc' lineColor='#ddd' fontSize='24'/>)}
 */
