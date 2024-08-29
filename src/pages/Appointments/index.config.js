@@ -1,5 +1,4 @@
 export default definePageConfig({
-    navigationBarTitleText: 'appointments page',
+    navigationBarTitleText: '签到信息',
     enablePullDownRefresh: true,
 });
-  

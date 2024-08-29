@@ -12,38 +12,30 @@ export const AuthProvider = ({ children }) => {
     const [isEmployee, setIsEmployee] = useState(false);
     const [userData, setUserData] = useState(null);
 
-    const wechat_login = (userInfo, userCode) => {
-        console.log('AuthContext: wechat_login: invoked.');
-        let loginResult = null;
-        if (isAuthenticated) {
-            return { success: false, message: 'already logged in...' };
-        }
-        const loginRes = AuthService.login_wechat(userCode);
-        if (!loginRes) {
-            loginResult = { success: false, message: 'server didnt response with valid login data' };
-        }
-        else if (!loginRes.success) {
-            loginResult = loginRes;
-        }
-        else { // success
-            loginResult = { success: true, message: loginRes.message };
+    const wechat_login = async (userInfo, credentials) => {
+        try {
+            const { success, message, openId } = await AuthService.login(credentials);
             const userData = {
                 ...userInfo,
-                openid: loginRes.openId
+                openid: openId
             }
             setIsAuthenticated(true);
             setUserData(userData);
             Taro.setStorageSync('userInfo', userData);
+        } catch (error) {
+            Taro.showToast({
+                title: 'Login failed',
+                icon: 'fail',
+                duration: 2000
+            })
         }
-        console.log('AuthContext: wechat_login: loginResult: ');
-        console.log(loginResult);
-        return loginResult;
-    };
+    }
 
     const logout = () => {
         console.log('AuthContext: logout: invoked')
-        setIsAuthenticated(false);
         Taro.removeStorageSync('userInfo');
+        setIsAuthenticated(false);
+        setUserData(null);
     };
 
     const checkAuthStatus = () => {
@@ -52,6 +44,7 @@ export const AuthProvider = ({ children }) => {
         if (userData && userData.openid) {
             console.log('AuthContext: checkAuthStatus: userInfo found with wechat openid: ' + userData.openid);
             setIsAuthenticated(true);
+            setUserData(userData);
         }
     };
 
@@ -60,7 +53,7 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, wechat_login, logout, checkAuthStatus }}>
+        <AuthContext.Provider value={{ isAuthenticated, userData, wechat_login, logout, checkAuthStatus }}>
             {children}
         </AuthContext.Provider>
     );

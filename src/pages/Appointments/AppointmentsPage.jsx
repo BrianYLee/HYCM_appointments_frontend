@@ -1,20 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import Taro from '@tarojs/taro';
+import NotSignedIn from '../NotSignedIn';
 import Modal from '../../components/Modal';
 import CalendarTab from '../../components/CalendarTab';
 import AppointmentsService from '../../services/Appointments/AppointmentsService';
 import AppointmentCard from '../../components/AppointmentCard/AppointmentCard';
 import { View, Text, Image } from '@tarojs/components';
 import { AtDivider, AtTabs, AtTabsPane } from 'taro-ui'
-
-// loader
 import Loader from '../../components/Loader';
+
 import { useLoader } from '../../context/LoaderContext';
+import { useAuth } from '../../context/AuthContext';
 
 // Appointments page styling
 import './AppointmentsPage.scss'
 
 const AppointmentsPage = () => {
+    const { isAuthenticated } = useAuth();
+    if ( !isAuthenticated ) {
+        console.log('AppointmentsPage: user not authenticated');
+        return (
+            <NotSignedIn/>
+        )
+    }
+
     const { showLoader, hideLoader } = useLoader();
     const [ selectedDate, setDate ] = useState(new Date().toISOString().split('T')[0]);
     const [ currentTab, setTab ] = useState(0);
