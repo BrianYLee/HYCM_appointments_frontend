@@ -2,14 +2,14 @@ import Taro from '@tarojs/taro'
 import { WECHAT_LOGIN_URL } from '../../constants/config';
 
 const AuthService = {
-    login: async (credentials) => {
+    login: async (userCode) => {
         console.log('AuthService: login: invoked');
         try {
             const response = await Taro.request({
                 url: WECHAT_LOGIN_URL,
                 method: 'POST',
                 data: {
-                    code: credentials,
+                    code: userCode
                 }
             });
 

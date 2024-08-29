@@ -44,7 +44,7 @@ const UserPage = () => {
     };
 
   return (
-    <View className="user-container">
+    <View className='index'>
         <Loader />
         {isAuthenticated ? (
             <View>
@@ -61,14 +61,14 @@ const UserPage = () => {
             </View>
             
         ) : (
-            <AtButton
-                circle
-                type='primary'
-                openType="getUserInfo"
-                onGetUserInfo={handleLogin}
-                >
-                Login with WeChat
-            </AtButton>
+                <AtButton
+                    circle
+                    type='primary'
+                    openType="getUserInfo"
+                    onGetUserInfo={handleLogin}
+                    >
+                    Login with WeChat
+                </AtButton>
         )}
     </View>
   );

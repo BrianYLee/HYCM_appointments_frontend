@@ -12,9 +12,9 @@ export const AuthProvider = ({ children }) => {
     const [isEmployee, setIsEmployee] = useState(false);
     const [userData, setUserData] = useState(null);
 
-    const wechat_login = async (userInfo, credentials) => {
+    const wechat_login = async (userInfo, code) => {
         try {
-            const { success, message, openId, isEmployee } = await AuthService.login(credentials);
+            const { success, message, openId, isEmployee } = await AuthService.login(code);
             const userData = {
                 ...userInfo,
                 openid: openId,
