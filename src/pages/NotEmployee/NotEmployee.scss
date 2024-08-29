@@ -1,0 +1,19 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh; // Makes sure the content is vertically centered
+    text-align: center;
+}
+  
+.message {
+    margin-bottom: 20px;
+}
+
+.no-user {
+    display: block;
+    width  : 200px;
+    height : 200px;
+    margin : 30px auto;
+}

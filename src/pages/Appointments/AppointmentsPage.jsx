@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Taro from '@tarojs/taro';
 import NotSignedIn from '../NotSignedIn';
+import NotEmployee from '../NotEmployee';
 import Modal from '../../components/Modal';
 import CalendarTab from '../../components/CalendarTab';
 import AppointmentsService from '../../services/Appointments/AppointmentsService';
@@ -16,11 +17,16 @@ import { useAuth } from '../../context/AuthContext';
 import './AppointmentsPage.scss'
 
 const AppointmentsPage = () => {
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, isEmployee } = useAuth();
     if ( !isAuthenticated ) {
         console.log('AppointmentsPage: user not authenticated');
         return (
             <NotSignedIn/>
+        )
+    } else if ( isAuthenticated && !isEmployee ) {
+        console.log('AppointmentsPage: user is not an employee status');
+        return (
+            <NotEmployee/>
         )
     }
 
