@@ -1,6 +1,5 @@
 export default {
     pages: [
-        "pages/index/index",
         "pages/Appointments/index",
         "pages/User/index"
     ],
@@ -14,12 +13,6 @@ export default {
 
     tabBar: {
         list: [
-        {
-            pagePath: 'pages/index/index',
-            text: '首页',
-            iconPath: 'images/tabbar/home-inactive.png',
-            selectedIconPath: 'images/tabbar/home-active.png'
-        },
         {
             pagePath: 'pages/Appointments/index',
             text: '签到',
