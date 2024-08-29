@@ -14,12 +14,13 @@ const AuthService = {
             });
 
             if (response.statusCode === 200) {
-                const { openid } = response.data;
+                const { openid, employee } = response.data;
                 console.log('AuthService: login: openid: ' + openid);
                 return {
                     success: true,
                     message: '登录成功！',
-                    openId: openid
+                    openId: openid,
+                    isEmployee: employee
                 };
             } else {
                 console.log('AuthService: login: login failed');

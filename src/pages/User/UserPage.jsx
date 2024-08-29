@@ -10,7 +10,7 @@ import { useLoader } from '../../context/LoaderContext';
 import './UserPage.scss';
 
 const UserPage = () => {
-    const { userData, wechat_login, logout } = useAuth();
+    const { isAuthenticated, isEmployee, userData, wechat_login, logout } = useAuth();
     const { showLoader, hideLoader } = useLoader();
 
     const handleLogin = async (userProfile) => {
@@ -46,14 +46,14 @@ const UserPage = () => {
   return (
     <View className="user-container">
         <Loader />
-        {userData ? (
+        {isAuthenticated ? (
             <View>
                 <Image src={userData.avatarUrl} />
-                <Text>{userData.nickName}</Text>
-                <Text>OpenID: {userData.openid}</Text>
+                <View>{userData.nickName}</View>
+                <View>OpenID: {userData.openid}</View>
+                <View>is employee: {(isEmployee ? 'yes' : 'no')}</View>
                 <AtButton
-                    className="login-button"
-                    openType="getUserInfo"
+                    type='secondary'
                     onClick={logout}
                 >
                     Logout
@@ -62,7 +62,8 @@ const UserPage = () => {
             
         ) : (
             <AtButton
-                className="login-button"
+                circle
+                type='primary'
                 openType="getUserInfo"
                 onGetUserInfo={handleLogin}
                 >

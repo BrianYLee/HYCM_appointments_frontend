@@ -14,12 +14,14 @@ export const AuthProvider = ({ children }) => {
 
     const wechat_login = async (userInfo, credentials) => {
         try {
-            const { success, message, openId } = await AuthService.login(credentials);
+            const { success, message, openId, isEmployee } = await AuthService.login(credentials);
             const userData = {
                 ...userInfo,
-                openid: openId
+                openid: openId,
+                isEmployee: isEmployee
             }
             setIsAuthenticated(true);
+            setIsEmployee(isEmployee);
             setUserData(userData);
             Taro.setStorageSync('userInfo', userData);
         } catch (error) {
@@ -35,6 +37,7 @@ export const AuthProvider = ({ children }) => {
         console.log('AuthContext: logout: invoked')
         Taro.removeStorageSync('userInfo');
         setIsAuthenticated(false);
+        setIsEmployee(false);
         setUserData(null);
     };
 
@@ -45,6 +48,10 @@ export const AuthProvider = ({ children }) => {
             console.log('AuthContext: checkAuthStatus: userInfo found with wechat openid: ' + userData.openid);
             setIsAuthenticated(true);
             setUserData(userData);
+            if (userData.isEmployee) {
+                console.log('user is also an employee');
+                setIsEmployee(true);
+            }
         }
     };
 
@@ -53,7 +60,7 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, userData, wechat_login, logout, checkAuthStatus }}>
+        <AuthContext.Provider value={{ isAuthenticated, isEmployee, userData, wechat_login, logout, checkAuthStatus }}>
             {children}
         </AuthContext.Provider>
     );
