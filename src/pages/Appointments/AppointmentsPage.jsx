@@ -53,10 +53,11 @@ const AppointmentsPage = () => {
         hideLoader();
     };
 
-    const handlePullDownRefresh = async () => {
-        await fetchAndSetAppointments(selectedDate);
-        Taro.stopPullDownRefresh(); // Stop the pull-down refresh animation
-    };
+    const handleDateChange = (date) => {
+        console.log('got new date from calendar: ' + date);
+        setDate(date);
+        fetchAndSetAppointments(selectedDate)
+    }
 
     // checkin functions
     const handleCheckIn = (apmtObj) => {
@@ -124,19 +125,13 @@ const AppointmentsPage = () => {
 
     useEffect(() => {
         fetchAndSetAppointments(selectedDate);
-    }, [selectedDate]);
-
-    // Add the onPullDownRefresh lifecycle method
-    useEffect(() => {
-        Taro.startPullDownRefresh();
-        handlePullDownRefresh();
     }, []);
 
     const tabList = [{ title: `未签到 (${notArrived.length})` }, { title: `已签到 (${arrived.length})` }, { title: `全部 (${appointments.length})` }]
     return (
         <View className='index'>
             <Loader />
-            <CalendarTab currentDate={selectedDate} handleDateChange={setDate}></CalendarTab>
+            <CalendarTab currentDate={selectedDate} handleDateChange={handleDateChange}></CalendarTab>
             <Modal
                 isOpened={showCheckInModal}
                 title='请确认车牌号'
