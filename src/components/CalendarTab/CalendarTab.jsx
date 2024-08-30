@@ -29,6 +29,7 @@ const CalendarTab = ({ currentDate, handleDateChange }) => {
     }
     
     const handleDateSelect = (dateObj) => {
+        console.log('calendar: got new date: ' + dateObj.value.end)
         setSelectedDate(dateObj.value.end);
     }
 
