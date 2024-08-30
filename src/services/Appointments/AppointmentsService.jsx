@@ -1,5 +1,4 @@
 import Taro from '@tarojs/taro'
-//import { useAuth } from '../../context/AuthContext';
 import { APPOINTMENTS_URL, APPOINTMENT_CHECKIN_URL, APPOINTMENT_CHECKOUT_URL } from '../../constants/config';
 
 const getAppointments = async (dateToFetch) => {
