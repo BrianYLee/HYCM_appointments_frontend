@@ -1,6 +1,7 @@
 export default {
     pages: [
         "pages/Welcome/index",
+        "pages/Registration/index",
         "pages/Appointments/index",
         "pages/User/index"
     ],

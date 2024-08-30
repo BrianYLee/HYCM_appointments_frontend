@@ -20,14 +20,14 @@ const WelcomePage = () => {
             console.log('authenticated and is employee')
             Taro.switchTab({
                 url: '/pages/Appointments/index'
-            })
+            });
         }
         if (isAuthenticated && !isEmployee) {
             // go to register page
             console.log('authenticated and NOT employee')
-            Taro.switchTab({
-                url: '/pages/User/index'
-            })
+            Taro.redirectTo({
+                url: '/pages/Registration/index'
+            });
         }
     }, [isAuthenticated, isEmployee]);
 

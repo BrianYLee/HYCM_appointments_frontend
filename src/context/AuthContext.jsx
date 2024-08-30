@@ -26,8 +26,8 @@ export const AuthProvider = ({ children }) => {
         else if (isAuthenticated && !isEmployee) {
             // goto registration page
             console.log('redir auth')
-            Taro.switchTab({
-                url: '/pages/User/index'
+            Taro.redirectTo({
+                url: '/pages/Registration/index'
             });
         }
         else {
@@ -39,8 +39,8 @@ export const AuthProvider = ({ children }) => {
     }
 
     const handleLogin = async () => {
-        showLoader();
         try {
+            showLoader();
             const taroRes = await Taro.login();
             if (taroRes.code) {
                 const credentials = taroRes.code;
@@ -83,6 +83,29 @@ export const AuthProvider = ({ children }) => {
             })
         }
     }
+    const wechat_renew = async (openid) => {
+        try {
+            const { success, message, openId, isEmployee } = await AuthService.renew(openid);
+            const userData = {
+                openid: openId,
+                isEmployee: isEmployee
+            }
+            setIsAuthenticated(prev => prev = success);
+            setIsEmployee(prev => prev = isEmployee);
+            setUserData(userData);
+            Taro.setStorageSync('userInfo', userData);
+        } catch (error) {
+            setIsAuthenticated(false);
+            setIsEmployee(false);
+            setUserData(null);
+            Taro.removeStorageSync('userInfo');
+            Taro.showToast({
+                title: 'renew failed',
+                icon: 'fail',
+                duration: 2000
+            });
+        }
+    }
 
     const logout = () => {
         console.log('AuthContext: logout: invoked')
@@ -90,33 +113,47 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated(prev => prev = false);
         setIsEmployee(prev => prev = false);
         setUserData(null);
+        Taro.reLaunch({
+            url: '/pages/Welcome/index'
+        });
     };
 
-    const checkAuthStatus = () => {
+    const checkAuthStatus = async () => {
+        showLoader();
         console.log('AuthContext: checkAuthStatus: invoked.');
         const userData = Taro.getStorageSync('userInfo');
         if (userData && userData.openid) {
             console.log('AuthContext: checkAuthStatus: userInfo found with wechat openid: ' + userData.openid);
+            try {
+                await wechat_renew(userData.openid);
+            } catch (err) {
+                console.log(err);
+            } finally {
+                hideLoader();
+                //redirectOnAuthChange();
+            }
+            /*
             if (userData.isEmployee) {
                 console.log('user is also an employee');
                 setIsAuthenticated(prev => prev = true);
                 setIsEmployee(prev => prev = true);
-                setUserData(prev => prev = userData);
             }
             else {
                 setIsAuthenticated(prev => prev = true);
-                setUserData(prev => prev = userData);
+                setIsEmployee(prev => prev = false);
             }
+            setUserData(prev => prev = userData);
+            */
+        }
+        else {
+            console.log('AuthContext: checkAuthStatus: no user found')
+            hideLoader();
         }
     };
 
     useEffect(() => {
         checkAuthStatus();
     }, []);
-
-    useEffect(() => {
-        redirectOnAuthChange();
-    }, [isAuthenticated, isEmployee]);
 
     return (
         <AuthContext.Provider value={{ isAuthenticated, isEmployee, userData, handleLogin, logout, checkAuthStatus }}>
