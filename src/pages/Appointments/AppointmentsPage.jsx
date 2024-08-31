@@ -17,7 +17,7 @@ import { useAuth } from '../../context/AuthContext';
 import './AppointmentsPage.scss'
 
 const AppointmentsPage = () => {
-    const { isAuthenticated, isEmployee } = useAuth();
+    const { isAuthenticated, isEmployee, userData } = useAuth();
     if ( !isAuthenticated ) {
         console.log('AppointmentsPage: user not authenticated');
         return (
@@ -124,7 +124,9 @@ const AppointmentsPage = () => {
     }
 
     useEffect(() => {
-        fetchAndSetAppointments(selectedDate);
+        if (isAuthenticated && isEmployee && userData?.openid) {
+            fetchAndSetAppointments(selectedDate);
+        }
     }, []);
 
     const tabList = [{ title: `未签到 (${notArrived.length})` }, { title: `已签到 (${arrived.length})` }, { title: `全部 (${appointments.length})` }]

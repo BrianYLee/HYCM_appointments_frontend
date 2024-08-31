@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image } from '@tarojs/components';
-import { AtForm, AtInput, AtButton } from 'taro-ui'
 import Taro from '@tarojs/taro';
+import { View, Text, Image } from '@tarojs/components';
+import { AtForm, AtInput, AtButton, AtMessage } from 'taro-ui'
 import DocsHeader from '../../components/DocsHeader';
+import CountdownButton from '../../components/CountdownButton';
 import Loader from '../../components/Loader';
 import RegisterService from '../../services/Register/RegisterService';
 
@@ -12,7 +13,7 @@ import { useLoader } from '../../context/LoaderContext';
 import './RegistrationPage.scss';
 
 const WelcomePage = () => {
-    const { isAuthenticated, isEmployee, userData, logout } = useAuth();
+    const { isAuthenticated, isEmployee, logout, userData } = useAuth();
     const { showLoader, hideLoader, loading } = useLoader();
     const [ applications, updateApplications ] = useState([]);
     const [ hasPendingApplication, setHasPendingApplication ] = useState(false);
@@ -36,6 +37,11 @@ const WelcomePage = () => {
         }
     }
 
+    const refreshApplications = () => {
+        console.log('refreshing applications');
+        fetchAndSetApplication();
+    }
+
     const startRegistration = () => {
         Taro.navigateTo({
             url: '../../forms/Registration/index'
@@ -49,12 +55,20 @@ const WelcomePage = () => {
     }, [userData]);
 
     useEffect(() => {
-        console.log('checking if has pending applications');
+        const approved = applications.filter(application => application.is_approved == true);
+        if (approved.length > 0) {
+            console.log('application approved. relogging');
+            Taro.reLaunch({
+                url: '/pages/Welcome/index'
+            });
+            return;
+        }
         const pending = applications.filter(application => application.is_approved == null);
-        console.log('filtered applications: ');
-        console.log(pending);
-        console.log('length is ' + pending.length);
         if (pending.length > 0) {
+            Taro.atMessage({
+                message: '管理员正在努力审核',
+                type: 'warning'
+            });
             setHasPendingApplication(true);
         } else if (pending.length <= 0) {
             setHasPendingApplication(false);
@@ -64,9 +78,12 @@ const WelcomePage = () => {
     return (
         <View className="container">
             <Loader />
+            <AtMessage />
             <Image className="logo" src={require('../../images/logo.png')} />
-            <DocsHeader title='您目前还不是本平台的员工' desc={hasPendingApplication ? '您以提交了申请，请耐心等待。退出并重新登录可更新审核结果。' : '请点击“员工注册申请”提交您的注册信息'} />
-            <AtButton disabled={hasPendingApplication} loading={loading} className='login_button' type='primary' onClick={startRegistration}>员工注册申请</AtButton>
+            <DocsHeader title={hasPendingApplication ? '申请已提交' : '您目前还不是本平台的员工'} desc={hasPendingApplication ? '请耐心等待' : '请点击“员工注册申请”提交您的注册信息'} />
+            {hasPendingApplication 
+                ? (<CountdownButton className='login_button' text='更新审核' disabledText='重试' duration={60} onClick={refreshApplications} />)
+                : <AtButton disabled={{loading} || {hasPendingApplication}} className='login_button' type='primary' onClick={startRegistration}>员工注册申请</AtButton>}
             <AtButton className='logout_btn' type='secondary' onClick={logout} >退出</AtButton>
         </View>
     )

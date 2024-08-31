@@ -163,7 +163,7 @@ const RegistrationForm = () => {
                         <AtRadio 
                             options={radioOpts} 
                             value={formData.dept} 
-                            onClick={(value) => handleInput(value, 'dept')}
+                            onClick={(value) => {handleInput(value, 'dept'); toggleDeptSelect(false)}}
                         />
                     </AtFloatLayout>
                     <AtInput
