@@ -58,9 +58,10 @@ const WelcomePage = () => {
         const approved = applications.filter(application => application.is_approved == true);
         if (approved.length > 0) {
             console.log('application approved. relogging');
-            Taro.reLaunch({
-                url: '/pages/Welcome/index'
-            });
+            Taro.showToast({
+                title: '审核通过！',
+                icon: 'success'
+            }, logout());
             return;
         }
         const pending = applications.filter(application => application.is_approved == null);
