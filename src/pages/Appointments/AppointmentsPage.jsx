@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Taro from '@tarojs/taro';
-import NotSignedIn from '../NotSignedIn';
-import NotEmployee from '../NotEmployee';
+import NotSignedIn from '../../components/NotSignedIn';
+import NotEmployee from '../../components/NotEmployee';
 import Modal from '../../components/Modal';
 import CalendarTab from '../../components/CalendarTab';
 import AppointmentsService from '../../services/Appointments/AppointmentsService';
@@ -43,7 +43,6 @@ const AppointmentsPage = () => {
     // request appointments data
     const fetchAndSetAppointments = async () => {
         showLoader();
-        console.log('fetchAndSetAppointments invoked');
         const res = await AppointmentsService.getAppointments(selectedDate);
         if (res && res.success) {
             updateAppointments(res.data);
@@ -68,10 +67,11 @@ const AppointmentsPage = () => {
         showLoader();
         const res = await AppointmentsService.checkIn(currentApmt.id);
         if (res && res.success) {
+            hideLoader();
             Taro.showToast({
                 title: '签到成功',
                 icon: 'success',
-                duration: 1000,
+                //duration: 1000,
                 complete: () => {
                     fetchAndSetAppointments();
                 }
