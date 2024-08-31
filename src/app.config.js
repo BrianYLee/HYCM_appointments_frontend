@@ -3,7 +3,8 @@ export default {
         "pages/Welcome/index",
         "pages/Registration/index",
         "pages/Appointments/index",
-        "pages/User/index"
+        "pages/User/index",
+        "forms/Registration/index"
     ],
     window: {
         backgroundTextStyle: "light",
