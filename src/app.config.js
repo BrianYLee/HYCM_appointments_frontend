@@ -8,13 +8,21 @@ export default {
     ],
     window: {
         backgroundTextStyle: "light",
-        navigationBarBackgroundColor: "#ccc",
+        navigationBarBackgroundColor: "#fff",
         navigationBarTitleText: "WeChat",
         navigationBarTextStyle: "black",
         //enablePullDownRefresh: true
     },
-
+    permission: {
+        'scope.userInfo': {
+          desc: '您的信息需要用来登录',
+        },
+    },
     tabBar: {
+        selectedColor: '#000000',
+        color: '#aaaaaa',
+        borderStyle: 'black',
+        backgroundColor: '#fff',
         list: [
             {
                 pagePath: 'pages/Appointments/index',
