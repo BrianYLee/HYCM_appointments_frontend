@@ -16,16 +16,28 @@ const UserPage = () => {
 
   const handleAddAppointment = () => {
     // Handle navigation or actions for managing applications
-    Taro.navigateTo({ url: '/pages/manageApplications/index' });
+    // Taro.navigateTo({ url: '/pages/manageApplications/index' });
+    Taro.showToast({
+      title: 'WIP',
+      icon: 'error'
+    })
   };
 
   const handleManageEmployees = () => {
     // Handle navigation or actions for managing appointments
-    Taro.navigateTo({ url: '/pages/manageAppointments/index' });
+    //Taro.navigateTo({ url: '/pages/manageAppointments/index' });
+    Taro.showToast({
+      title: 'WIP',
+      icon: 'error'
+    });
   };
 
   const handleManageApplications = () => {
     console.log('manage applications');
+    Taro.showToast({
+      title: 'WIP',
+      icon: 'error'
+    })
   }
 
   return (

@@ -7,7 +7,7 @@ import { useLoader } from './LoaderContext';
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [authLoading, setAuthLoading] = useState(true);
+    const [authLoading, setAuthLoading] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isEmployee, setIsEmployee] = useState(false);
     const [userData, setUserData] = useState(null);
@@ -128,7 +128,7 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, isEmployee, userData, handleLogin, logout, checkAuthStatus }}>
+        <AuthContext.Provider value={{ isAuthenticated, isEmployee, userData, handleLogin, logout, checkAuthStatus, authLoading }}>
             {children}
         </AuthContext.Provider>
     );

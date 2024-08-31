@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Image } from '@tarojs/components';
-import { AtForm, AtInput, AtButton } from 'taro-ui'
+import React, { useEffect } from 'react';
+import { View, Image } from '@tarojs/components';
+import { AtButton } from 'taro-ui'
 import Taro from '@tarojs/taro';
 import DocsHeader from '../../components/DocsHeader';
 import Loader from '../../components/Loader';
