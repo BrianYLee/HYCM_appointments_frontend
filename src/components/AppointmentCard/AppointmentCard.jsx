@@ -7,7 +7,7 @@ import { AtCard, AtButton} from 'taro-ui'
 // styling
 import './AppointmentCard.scss'
 
-const AppointmentCard = ( { note = undefined, apmtInfo, handleCheckIn, handleCheckOut  } ) => {
+const AppointmentCard = ( { note = undefined, apmtInfo, handleCheckIn, handleCheckOut, today } ) => {
     return ( 
         <View className='appointment-card'>
             <AtCard
@@ -18,8 +18,8 @@ const AppointmentCard = ( { note = undefined, apmtInfo, handleCheckIn, handleChe
                     || require('../../images/icons/warning.png')
                 }
                 extra={apmtInfo.checked_in
-                    && (<AtButton disabled={!(apmtInfo.scheduled_date == new Date().toISOString().split('T')[0])} onClick={() => handleCheckOut(apmtInfo)} size='small' circle>取消签到</AtButton>)
-                    || (<AtButton disabled={!(apmtInfo.scheduled_date == new Date().toISOString().split('T')[0])} onClick={() => handleCheckIn(apmtInfo)} size='small' circle type='primary'>签到</AtButton>)
+                    && (<AtButton disabled={!(apmtInfo.scheduled_date == today)} onClick={() => handleCheckOut(apmtInfo)} size='small' circle>取消签到</AtButton>)
+                    || (<AtButton disabled={!(apmtInfo.scheduled_date == today)} onClick={() => handleCheckIn(apmtInfo)} size='small' circle type='primary'>签到</AtButton>)
                 }
                 note={note}
             >

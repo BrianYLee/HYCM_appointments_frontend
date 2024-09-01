@@ -30,8 +30,16 @@ const AppointmentsPage = () => {
         return (<NotEmployee/>);
     }
 
+    const dateOpt = {
+        timeZone: 'Asia/Shanghai',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    }
+
     const { showLoader, hideLoader } = useLoader();
-    const [ selectedDate, setDate ] = useState(new Date().toISOString().split('T')[0]);
+    const [ selectedDate, setDate ] = useState(new Date().toLocaleDateString('en-CA', dateOpt));
+    const [ today, setToday ] = useState(new Date().toLocaleDateString('en-CA', dateOpt));
     const [ currentTab, setTab ] = useState(0);
     const [ appointments, updateAppointments ] = useState([]);
     const [ notArrived, updateNotArrived ] = useState([]);
@@ -44,7 +52,7 @@ const AppointmentsPage = () => {
     const fetchAndSetAppointments = async () => {
         showLoader();
         console.log('fetching apmts for ' + selectedDate);
-        const res = await AppointmentsService.getAppointments(selectedDate);
+        const res = await AppointmentsService.getAppointments(userData.openid, selectedDate);
         if (res && res.success) {
             updateAppointments(res.data);
             updateNotArrived(res.data.filter( apmt => !apmt.checked_in));
@@ -173,7 +181,7 @@ const AppointmentsPage = () => {
                 <AtTabsPane current={currentTab} index={0} >
                     {notArrived.length > 0 ? (
                         notArrived.map(( appointment ) => (
-                            <AppointmentCard apmtInfo={appointment} handleCheckIn={handleCheckIn} handleCheckOut={handleCheckOut}/>
+                            <AppointmentCard apmtInfo={appointment} handleCheckIn={handleCheckIn} handleCheckOut={handleCheckOut} today={today}/>
                         ))
                     ) : (
                     <View className='no-records'>
@@ -186,7 +194,7 @@ const AppointmentsPage = () => {
                 <AtTabsPane current={currentTab} index={1}>
                     {arrived.length > 0 ? (
                         arrived.map(( appointment ) => (
-                            <AppointmentCard apmtInfo={appointment} handleCheckIn={handleCheckIn} handleCheckOut={handleCheckOut}/>
+                            <AppointmentCard apmtInfo={appointment} handleCheckIn={handleCheckIn} handleCheckOut={handleCheckOut} today={today}/>
                         ))
                     ) : (
                     <View className='no-records'>
@@ -199,7 +207,7 @@ const AppointmentsPage = () => {
                 <AtTabsPane current={currentTab} index={2}>
                     {appointments.length > 0 ? (
                         appointments.map(( appointment ) => (
-                            <AppointmentCard apmtInfo={appointment} handleCheckIn={handleCheckIn} handleCheckOut={handleCheckOut}/>
+                            <AppointmentCard apmtInfo={appointment} handleCheckIn={handleCheckIn} handleCheckOut={handleCheckOut} today={today}/>
                         ))
                     ) : (
                     <View className='no-records'>

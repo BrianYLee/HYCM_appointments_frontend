@@ -1,13 +1,12 @@
 import Taro from '@tarojs/taro'
 import { APPOINTMENTS_URL, APPOINTMENT_CHECKIN_URL, APPOINTMENT_CHECKOUT_URL } from '../../constants/config';
 
-const getAppointments = async (dateToFetch) => {
+const getAppointments = async (openid, dateToFetch) => {
     console.log('AppointmentsService: getAppointments: invoked');
     try {
         const response = await Taro.request({
-            url: `${APPOINTMENTS_URL}?date=${dateToFetch}`,
+            url: `${APPOINTMENTS_URL}?openid=${openid}&date=${dateToFetch}`,
             method: 'GET',
-            //data: userInfo,
             header: {
                 'content-type': 'application/json'
             }
