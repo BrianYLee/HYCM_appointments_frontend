@@ -58,6 +58,11 @@ const AppointmentsPage = () => {
         setDate(prev => (prev = date));
     }
 
+    const refresh = () => {
+        if (isAuthenticated && isEmployee && userData?.openid) {
+            fetchAndSetAppointments();
+        }
+    }
     // checkin functions
     const handleCheckIn = (apmtObj) => {
         updateCurrentApmt(apmtObj);
@@ -140,7 +145,7 @@ const AppointmentsPage = () => {
     return (
         <View className='index'>
             <Loader />
-            <CalendarTab currentDate={selectedDate} handleDateChange={handleDateChange}></CalendarTab>
+            <CalendarTab currentDate={selectedDate} handleDateChange={handleDateChange} handleRefresh={refresh}></CalendarTab>
             <Modal
                 isOpened={showCheckInModal}
                 title='请确认车牌号'
