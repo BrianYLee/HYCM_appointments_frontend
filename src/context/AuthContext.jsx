@@ -16,7 +16,8 @@ export const AuthProvider = ({ children }) => {
 
     const handleLogin = async () => {
         try {
-            setAuthLoading(true);
+            //setAuthLoading(true);
+            //showLoader();
             const taroRes = await Taro.login();
             if (taroRes.code) {
                 const credentials = taroRes.code;
@@ -36,7 +37,8 @@ export const AuthProvider = ({ children }) => {
                 duration: 2000
             });
         } finally {
-            setAuthLoading(false);
+            //hideLoader();
+            //setAuthLoading(false);
         }
     };
 

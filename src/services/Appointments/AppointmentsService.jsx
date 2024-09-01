@@ -30,6 +30,38 @@ const getAppointments = async (dateToFetch) => {
     }
 };
 
+const postAppointment = async (apmtObj) => {
+    console.log('AppointmentsService: postAppointment: invoked');
+    try {
+        const userData = Taro.getStorageSync('userInfo');
+        if (!userData || !userData.openid) {
+            console.log('no openid found')
+            throw new Error('AppointmentsService: checkIn: no openid found');
+        }
+        const response = await Taro.request({
+            url: APPOINTMENTS_URL,
+            method: 'POST',
+            data: {
+                ...apmtObj,
+                openid: userData.openid
+            }
+        });
+        if (response.statusCode === 200) {
+            return { success: true };
+        } else {
+            console.log('cant post appointment');
+            console.log(response);
+            throw new Error('AppointmentsService: postAppointment: failed to post appointment');
+        }
+    } catch (error) {
+        Taro.showToast({
+            title: error.message,
+            icon: 'error'
+        });
+        return { success: false, message: 'AppointmentsService: postAppointment: failed to post' };
+    }
+}
+
 const checkIn = async (apmtId) => {
     console.log('AppointmentsService: checkIn: invoked. ID=' + apmtId);
     try {
@@ -61,7 +93,7 @@ const checkIn = async (apmtId) => {
     } catch (error) {
         Taro.showToast({
             title: error.message,
-            icon: 'none'
+            icon: 'error'
         });
         return { success: false, message: 'AppointmentsService: checkIn: failed to post checkin' };
     }
@@ -106,6 +138,7 @@ const checkOut = async (apmtId) => {
 
 export default {
     getAppointments,
+    postAppointment,
     checkIn,
     checkOut
 }

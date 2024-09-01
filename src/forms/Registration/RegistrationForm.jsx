@@ -88,12 +88,12 @@ const RegistrationForm = () => {
                 Taro.showToast({
                     title: '提交成功',
                     icon: 'success',
-                    duration: 1500
-                }).then(() => {
-                    Taro.reLaunch({
-                        url: '/pages/Welcome/index'
-                    });
-                })
+                    duration: 2000
+                });
+                setTimeout(() => {
+                    Taro.eventCenter.trigger('refreshApplications', {});
+                    Taro.navigateBack();
+                }, 2000);
             }
         } catch (err) {
             hideLoader();

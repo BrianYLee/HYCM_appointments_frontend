@@ -74,7 +74,14 @@ const WelcomePage = () => {
         } else if (pending.length <= 0) {
             setHasPendingApplication(false);
         }
-    }, [applications])
+    }, [applications]);
+
+    useEffect(() => {
+        Taro.eventCenter.on('refreshApplications', refreshApplications);
+        return () => {
+            Taro.eventCenter.off('refreshApplications', refreshApplications);
+        }
+    }, []);
 
     return (
         <View className="container">
@@ -84,7 +91,7 @@ const WelcomePage = () => {
             <DocsHeader title={hasPendingApplication ? '申请已提交' : '您目前还不是本平台的员工'} desc={hasPendingApplication ? '请耐心等待' : '请点击“员工注册申请”提交您的注册信息'} />
             {hasPendingApplication 
                 ? (<CountdownButton className='login_button' text='更新审核' disabledText='重试' duration={60} onClick={refreshApplications} />)
-                : <AtButton disabled={{loading} || {hasPendingApplication}} className='login_button' type='primary' onClick={startRegistration}>员工注册申请</AtButton>}
+                : <AtButton disabled={hasPendingApplication} className='login_button' type='primary' onClick={startRegistration}>员工注册申请</AtButton>}
             <AtButton className='logout_btn' type='secondary' onClick={logout} >退出</AtButton>
         </View>
     )
