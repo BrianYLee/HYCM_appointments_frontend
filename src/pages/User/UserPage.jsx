@@ -30,6 +30,7 @@ const UserPage = () => {
 
   const handleManageApplications = () => {
     console.log('manage applications');
+    console.log('loading: ' + loading);
     Taro.showToast({
       title: 'WIP',
       icon: 'error'

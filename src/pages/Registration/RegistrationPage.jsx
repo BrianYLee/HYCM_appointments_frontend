@@ -6,6 +6,7 @@ import DocsHeader from '../../components/DocsHeader';
 import CountdownButton from '../../components/CountdownButton';
 import Loader from '../../components/Loader';
 import RegisterService from '../../services/Register/RegisterService';
+import { REFRESH_APPLICATIONS } from '../../constants/events';
 
 import { useAuth } from '../../context/AuthContext';
 import { useLoader } from '../../context/LoaderContext';
@@ -77,9 +78,9 @@ const WelcomePage = () => {
     }, [applications]);
 
     useEffect(() => {
-        Taro.eventCenter.on('refreshApplications', refreshApplications);
+        Taro.eventCenter.on(REFRESH_APPLICATIONS, refreshApplications);
         return () => {
-            Taro.eventCenter.off('refreshApplications', refreshApplications);
+            Taro.eventCenter.off(REFRESH_APPLICATIONS, refreshApplications);
         }
     }, []);
 

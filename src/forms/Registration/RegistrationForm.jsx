@@ -5,6 +5,7 @@ import { AtForm, AtInput, AtButton, AtList, AtListItem, AtFloatLayout, AtRadio, 
 import DocsHeader from '../../components/DocsHeader';
 import Modal from '../../components/Modal/Modal';
 import RegisterService from '../../services/Register/RegisterService';
+import { REFRESH_APPLICATIONS } from '../../constants/events';
 
 import { useAuth } from '../../context/AuthContext';
 import { useLoader } from '../../context/LoaderContext';
@@ -91,7 +92,7 @@ const RegistrationForm = () => {
                     duration: 2000
                 });
                 setTimeout(() => {
-                    Taro.eventCenter.trigger('refreshApplications', {});
+                    Taro.eventCenter.trigger(REFRESH_APPLICATIONS, {});
                     Taro.navigateBack();
                 }, 2000);
             }

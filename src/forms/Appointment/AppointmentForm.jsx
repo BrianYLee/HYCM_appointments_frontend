@@ -4,7 +4,9 @@ import { View, Picker } from '@tarojs/components'
 import { AtForm, AtInput, AtButton, AtCalendar, AtListItem, AtCheckbox, AtFloatLayout, AtRadio, AtMessage, AtActionSheet, AtActionSheetItem } from 'taro-ui';
 import DocsHeader from '../../components/DocsHeader';
 import Modal from '../../components/Modal/Modal';
+import Loader from '../../components/Loader';
 import AppointmentsService from '../../services/Appointments/AppointmentsService';
+import { REFRESH_APMTS } from '../../constants/events';
 
 import { useAuth } from '../../context/AuthContext';
 import { useLoader } from '../../context/LoaderContext';
@@ -132,7 +134,12 @@ const AppointmentForm = () => {
                     duration: 2000
                 });
                 setTimeout(() => {
-                    Taro.navigateBack();
+                    Taro.eventCenter.trigger(REFRESH_APMTS, {});
+                    Taro.navigateBack({
+                        fail: (res) => {
+                            Taro.reLaunch();
+                        }
+                    });
                 }, 2000);
             }
         } catch (err) {
@@ -140,13 +147,14 @@ const AppointmentForm = () => {
             console.error('some went wrong while posting', err);
             Taro.showToast({
                 title: '提交失败',
-                icon: 'fail'
+                icon: 'error'
             });
         }
     };
 
     return (
         <View className='index'>
+            <Loader />
             <AtMessage />
             <Modal isOpened={showSubmitModal} closeOnClickOverlay={true} title='没错吧？' 
                 contents={[

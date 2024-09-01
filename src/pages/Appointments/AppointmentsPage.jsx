@@ -9,6 +9,7 @@ import AppointmentCard from '../../components/AppointmentCard/AppointmentCard';
 import { View, Text, Image } from '@tarojs/components';
 import { AtDivider, AtTabs, AtTabsPane } from 'taro-ui'
 import Loader from '../../components/Loader';
+import { REFRESH_APMTS } from '../../constants/events';
 
 import { useLoader } from '../../context/LoaderContext';
 import { useAuth } from '../../context/AuthContext';
@@ -17,17 +18,16 @@ import { useAuth } from '../../context/AuthContext';
 import './AppointmentsPage.scss'
 
 const AppointmentsPage = () => {
-    const { isAuthenticated, isEmployee, userData } = useAuth();
-    if ( !isAuthenticated ) {
+    const { isAuthenticated, isEmployee, userData, authLoading } = useAuth();
+    if ( !isAuthenticated && authLoading) {
+        return (<Loader />);
+    }
+    else if ( !isAuthenticated && !authLoading) {
         console.log('AppointmentsPage: user not authenticated');
-        return (
-            <NotSignedIn/>
-        )
+        return (<NotSignedIn/>);
     } else if ( isAuthenticated && !isEmployee ) {
         console.log('AppointmentsPage: user is not an employee status');
-        return (
-            <NotEmployee/>
-        )
+        return (<NotEmployee/>);
     }
 
     const { showLoader, hideLoader } = useLoader();
@@ -43,6 +43,7 @@ const AppointmentsPage = () => {
     // request appointments data
     const fetchAndSetAppointments = async () => {
         showLoader();
+        console.log('fetching apmts for ' + selectedDate);
         const res = await AppointmentsService.getAppointments(selectedDate);
         if (res && res.success) {
             updateAppointments(res.data);
@@ -54,8 +55,7 @@ const AppointmentsPage = () => {
 
     const handleDateChange = (date) => {
         console.log('got new date from calendar: ' + date);
-        setDate(date);
-        fetchAndSetAppointments(selectedDate)
+        setDate(prev => (prev = date));
     }
 
     // checkin functions
@@ -125,7 +125,14 @@ const AppointmentsPage = () => {
 
     useEffect(() => {
         if (isAuthenticated && isEmployee && userData?.openid) {
-            fetchAndSetAppointments(selectedDate);
+            fetchAndSetAppointments();
+        }
+    }, [selectedDate]);
+
+    useEffect(() => {
+        Taro.eventCenter.on(REFRESH_APMTS, fetchAndSetAppointments);
+        return () => {
+            Taro.eventCenter.off(REFRESH_APMTS, fetchAndSetAppointments);
         }
     }, []);
 
