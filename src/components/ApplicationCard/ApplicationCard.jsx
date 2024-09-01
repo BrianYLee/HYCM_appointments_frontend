@@ -10,7 +10,7 @@ const ApplicationCard = ( { note = undefined, appInfo, onReview } ) => {
             <AtCard
                 title={`${appInfo.last_name}${appInfo.first_name}`}
                 thumb={(appInfo.is_approved === null && require('../../images/icons/warning.png')) || (appInfo.is_approved === true && require('../../images/icons/check.png')) || (appInfo.is_approved === false && require('../../images/icons/x.png'))}
-                extra={(appInfo.is_approved === null && (<AtButton onClick={() => onReview(appInfo)} size='small' circle>审核</AtButton>))}
+                extra={(appInfo.is_approved === null && (<AtButton type='primary' onClick={() => onReview(appInfo)} size='small' circle>审核</AtButton>))}
                 note={note}
             >
                 <View className='at-row'>
