@@ -14,13 +14,15 @@ const AuthService = {
             });
 
             if (response.statusCode === 200) {
-                const { openid, employee } = response.data;
+                const { openid, employee, employee_name, department } = response.data;
                 console.log('AuthService: login: openid: ' + openid);
                 return {
                     success: true,
                     message: '登录成功！',
                     openId: openid,
-                    isEmployee: employee
+                    isEmployee: employee,
+                    employee_name: employee_name,
+                    department: department
                 };
             } else {
                 console.log('AuthService: login: login failed');
@@ -43,13 +45,15 @@ const AuthService = {
             });
 
             if (response.statusCode === 200) {
-                const { openid, employee } = response.data;
+                const { openid, employee, employee_name, department } = response.data;
                 console.log('AuthService: login: openid: ' + openid);
                 return {
                     success: true,
                     message: '登录成功！',
                     openId: openid,
-                    isEmployee: employee
+                    isEmployee: employee,
+                    employee_name: employee_name,
+                    department: department
                 };
             } else {
                 console.log('AuthService: login: login failed');

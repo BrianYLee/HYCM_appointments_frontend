@@ -4,6 +4,7 @@ export default {
         "pages/Registration/index",
         "pages/Appointments/index",
         "pages/User/index",
+        "pages/Applications/index",
         "forms/Registration/index",
         "forms/Appointment/index"
     ],

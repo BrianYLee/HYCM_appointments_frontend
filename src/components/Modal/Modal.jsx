@@ -4,7 +4,7 @@ import { AtButton, AtModal, AtModalHeader, AtModalContent, AtModalAction } from 
 
 import './Modal.scss';
 
-const Modal = ({ isOpened=false, closeOnClickOverlay=false, title, contents=[], cancelText, confirmText, onClose, onCancel, onConfirm }) => {
+const Modal = ({ isOpened=false, closeOnClickOverlay=false, title, contents=[], cancelText='取消', confirmText, rejectText='拒绝', onClose, onCancel, onConfirm, onReject=null }) => {
     return (
         <AtModal
             isOpened={isOpened}
@@ -19,6 +19,7 @@ const Modal = ({ isOpened=false, closeOnClickOverlay=false, title, contents=[], 
             </AtModalContent>
             <AtModalAction className='modal-button-group'>
                 {onCancel != null && (<AtButton circle type='secondary' onClick={onCancel}>{cancelText}</AtButton>)}
+                {onReject != null && (<AtButton className='reject-btn' circle type='primary' onClick={onReject}>{rejectText}</AtButton>)}
                 {onConfirm != null && (<AtButton circle type='primary' onClick={onConfirm}>{confirmText}</AtButton>)}
             </AtModalAction>
         </AtModal>

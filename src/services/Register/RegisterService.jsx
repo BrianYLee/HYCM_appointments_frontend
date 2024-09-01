@@ -1,5 +1,5 @@
 import Taro from '@tarojs/taro'
-import { REGISTER_URL } from '../../constants/config';
+import { REGISTER_URL, APPLICATIONS_URL, APPLICATIONS_APPROVE_URL, APPLICATIONS_REJECT_URL } from '../../constants/config';
 
 const RegisterService = {
     register: async (openid, lName, fName, dept, phone) => {
@@ -32,6 +32,7 @@ const RegisterService = {
             throw error;
         }
     },
+
     getApplication: async (openid) => {
         console.log('RegisterService: getApplication: invoked');
         try {
@@ -55,6 +56,89 @@ const RegisterService = {
             }
         } catch (error) {
             console.error('RegisterService: getApplication: error fetching applications for openid: ' + openid, error);
+            throw error;
+        }
+    },
+
+    getApplications: async (openid) => {
+        console.log('RegisterService: getApplications: invoked');
+        try {
+            const response = await Taro.request({
+                url: `${APPLICATIONS_URL}?openid=${openid}`,
+                method: 'GET',
+                header: {
+                    'content-type': 'application/json'
+                }
+            });
+            if (response.statusCode === 200) {
+                const applications = response.data;
+                return {
+                    success: true,
+                    message: 'got applications',
+                    data: applications
+                };
+            } else {
+                console.log('RegisterService: getApplications: failed');
+                throw new Error('RegisterService: getApplications: failed');
+            }
+        } catch (error) {
+            console.error('RegisterService: getApplications: error fetching employee applications with openid: ' + openid, error);
+            throw error;
+        }
+    },
+
+    approve: async (openid, application) => {
+        console.log('RegisterService: approve: invoked');
+        try {
+            const response = await Taro.request({
+                url: APPLICATIONS_APPROVE_URL,
+                method: 'POST',
+                data: {
+                    employee_openid: openid,
+                    application_id: application.id,
+                    application_openid: application.openid
+                }
+            });
+            if (response.statusCode === 200) {
+                console.log('RegisterService: approve: success');
+                return {
+                    success: true,
+                    message: '提交成功'
+                };
+            } else {
+                console.log('RegisterService: approve: post failed');
+                throw new Error('RegisterService: approve: post failed');
+            }
+        } catch (error) {
+            console.error('RegisterService: error while approve', error);
+            throw error;
+        }
+    },
+
+    reject: async (openid, application) => {
+        console.log('RegisterService: reject: invoked');
+        try {
+            const response = await Taro.request({
+                url: APPLICATIONS_REJECT_URL,
+                method: 'POST',
+                data: {
+                    employee_openid: openid,
+                    application_id: application.id,
+                    application_openid: application.openid
+                }
+            });
+            if (response.statusCode === 200) {
+                console.log('RegisterService: reject: success');
+                return {
+                    success: true,
+                    message: '提交成功'
+                };
+            } else {
+                console.log('RegisterService: reject: post failed');
+                throw new Error('RegisterService: reject: post failed');
+            }
+        } catch (error) {
+            console.error('RegisterService: error while reject', error);
             throw error;
         }
     }

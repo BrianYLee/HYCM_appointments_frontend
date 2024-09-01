@@ -13,10 +13,7 @@ const NotSignedIn = () => {
     return (
         <View className="container">
             <Image className="no-user" src={require('../../images/icons/no-user.png')} />
-            <Text className="message">You're not signed in! Click below to sign in.</Text>
-            <AtButton circle type='primary' className="sign-in-button" onClick={handleSignIn}>
-                Sign In
-            </AtButton>
+            <Text className="message">You're not signed in!</Text>
         </View>
     );
 };

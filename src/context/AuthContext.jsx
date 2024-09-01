@@ -10,13 +10,14 @@ export const AuthProvider = ({ children }) => {
     const [authLoading, setAuthLoading] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isEmployee, setIsEmployee] = useState(false);
-    const [userData, setUserData] = useState(null);
+    const [isAdmin, setIsAdmin] = useState(false);
+    const [userData, setUserData] = useState({});
 
     const { showLoader, hideLoader } = useLoader();
 
     const handleLogin = async () => {
         try {
-            //setAuthLoading(true);
+            setAuthLoading(true);
             //showLoader();
             const taroRes = await Taro.login();
             if (taroRes.code) {
@@ -38,22 +39,27 @@ export const AuthProvider = ({ children }) => {
             });
         } finally {
             //hideLoader();
-            //setAuthLoading(false);
+            setAuthLoading(false);
         }
     };
 
     const wechat_login = async (code) => {
         try {
-            setAuthLoading(true);
-            const { success, message, openId, isEmployee } = await AuthService.login(code);
-            const userData = {
+            //setAuthLoading(true);
+            const { success, message, openId, isEmployee, employee_name, department } = await AuthService.login(code);
+            const newUserData = {
                 openid: openId,
-                isEmployee: isEmployee
-            }
-            setIsAuthenticated(prev => prev = true);
+                isEmployee: isEmployee,
+                employee_name: employee_name,
+                department: department
+            };
+            setIsAuthenticated(prev => prev = success);
             setIsEmployee(prev => prev = isEmployee);
-            setUserData(userData);
-            Taro.setStorageSync('userInfo', userData);
+            if(department == 'admin') {
+                setIsAdmin(prev => prev = true);
+            }
+            setUserData(newUserData);
+            Taro.setStorageSync('userInfo', newUserData);
         } catch (error) {
             Taro.showToast({
                 title: 'Login failed',
@@ -61,26 +67,31 @@ export const AuthProvider = ({ children }) => {
                 duration: 2000
             })
         } finally {
-            setAuthLoading(false);
+            //setAuthLoading(false);
         }
     };
 
     const wechat_renew = async (openid) => {
         try {
             setAuthLoading(true);
-            const { success, message, openId, isEmployee } = await AuthService.renew(openid);
-            const userData = {
+            const {success, message, openId, isEmployee, employee_name, department } = await AuthService.renew(openid);
+            const newUserData = {
                 openid: openId,
-                isEmployee: isEmployee
+                isEmployee: isEmployee,
+                employee_name: employee_name,
+                department: department
             }
             setIsAuthenticated(prev => prev = success);
             setIsEmployee(prev => prev = isEmployee);
-            setUserData(userData);
-            Taro.setStorageSync('userInfo', userData);
+            if(department == 'admin') {
+                setIsAdmin(prev => prev = true);
+            }
+            setUserData(newUserData);
+            Taro.setStorageSync('userInfo', newUserData);
         } catch (error) {
             setIsAuthenticated(false);
             setIsEmployee(false);
-            setUserData(null);
+            setUserData({});
             Taro.removeStorageSync('userInfo');
             Taro.showToast({
                 title: 'renew failed',
@@ -97,7 +108,7 @@ export const AuthProvider = ({ children }) => {
         Taro.removeStorageSync('userInfo');
         setIsAuthenticated(prev => prev = false);
         setIsEmployee(prev => prev = false);
-        setUserData(null);
+        setUserData({});
         Taro.reLaunch({
             url: '/pages/Welcome/index'
         });
@@ -130,7 +141,7 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, isEmployee, userData, handleLogin, logout, checkAuthStatus, authLoading }}>
+        <AuthContext.Provider value={{ isAuthenticated, isEmployee, isAdmin, userData, handleLogin, logout, checkAuthStatus, authLoading }}>
             {children}
         </AuthContext.Provider>
     );

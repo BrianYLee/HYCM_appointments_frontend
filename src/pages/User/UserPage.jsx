@@ -30,11 +30,7 @@ const UserPage = () => {
 
   const handleManageApplications = () => {
     console.log('manage applications');
-    console.log('loading: ' + loading);
-    Taro.showToast({
-      title: 'WIP',
-      icon: 'error'
-    })
+    Taro.navigateTo({ url: '/pages/Applications/index'});
   }
 
   return (
@@ -44,8 +40,8 @@ const UserPage = () => {
           <AtAvatar circle size='large' image={require('../../images/icons/no-user.png')}></AtAvatar>
         </View>
         <View className='at-col'>
-          <View className='at-article__h1'>john doe</View>
-          <View className='at-article__info'>市场部</View>
+          <View className='at-article__h1'>{userData.employee_name}</View>
+          <View className='at-article__info'>{userData.department == 'admin' ? '超级管理员' : userData.department}</View>
         </View>
       </View>
 
