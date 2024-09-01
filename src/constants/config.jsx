@@ -14,8 +14,8 @@ const WECHAT_RENEW_ROUTE = '/login/wechat_renew';
 // registration endpoint
 const REGISTER_ROUTE = '/register';
 const APPLICATIONS_ROUTE = REGISTER_ROUTE + '/applications';
-const APPLICATIONS_APPROVE = APPLICATIONS_ROUTE + '/approve';
-const APPLICATIONS_REJECT = APPLICATIONS_ROUTE + '/reject';
+const APPLICATIONS_APPROVE = REGISTER_ROUTE + '/approve';
+const APPLICATIONS_REJECT = REGISTER_ROUTE + '/reject';
 
 export const APPOINTMENTS_URL = BASE_URL + APPOINTMENTS_ROUTE;
 export const APPOINTMENT_CHECKIN_URL = BASE_URL + APPOINTMENTS_CHECKIN;
