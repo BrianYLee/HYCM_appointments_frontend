@@ -169,7 +169,7 @@ const AppointmentsPage = () => {
                 onCancel={handleCancel}
                 onConfirm={handleCheckOutConfirm}
             />
-            <AtTabs swipeable={false} current={currentTab} tabList={tabList} onClick={setTab.bind(this)}>
+            <AtTabs className='appointments-tab' swipeable={false} current={currentTab} tabList={tabList} onClick={setTab.bind(this)}>
                 <AtTabsPane current={currentTab} index={0} >
                     {notArrived.length > 0 ? (
                         notArrived.map(( appointment ) => (

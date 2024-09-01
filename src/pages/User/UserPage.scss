@@ -1,32 +1,33 @@
 .user-page {
-  background-color: #eeeeee;
+  background-color: #ffffff;
   color: #fff;
-  height: 100vh;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-top: 20px;
 
   .profile-container {
-    padding-left: 20px;
-    padding-right: 20px;
+    background-color: white;
     padding-top: 20px;
     padding-bottom: 20px;
-    margin-top: 30px;
-    margin-bottom: 30px;
   }
 
-  .at-list {
-    //background-color: #e2e2e2;
-    //background-color: aqua;
-    //border-radius: 20px;
-    padding-left: 15px;
-    padding-right: 15px;
+  .control-panel {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border: none;
+    ::before {
+      border: none;
+    }
   }
 
   .at-list__item {
-    color: #181818;
     border-radius: 20px;
-    background-color: #e0e0e0;
+    background-color: #f2f2f2;
     margin-top: 10px;
     margin-bottom: 10px;
-    //border-bottom: 1px solid #444;
+  }
+  .at-list__item::after {
+    border: 0;
   }
 
   .at-list__item:last-child {
@@ -36,4 +37,7 @@
   .at-list__item-title {
     font-size: 16px;
   }
+}
+.at-list::after {
+  border: none;
 }

@@ -15,11 +15,6 @@ export default {
         navigationBarTextStyle: "black",
         //enablePullDownRefresh: true
     },
-    permission: {
-        'scope.userInfo': {
-          desc: '您的信息需要用来登录',
-        },
-    },
     tabBar: {
         selectedColor: '#000000',
         color: '#aaaaaa',

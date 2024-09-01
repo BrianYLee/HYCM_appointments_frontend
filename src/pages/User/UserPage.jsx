@@ -21,7 +21,6 @@ const UserPage = () => {
 
   const handleManageEmployees = () => {
     // Handle navigation or actions for managing appointments
-    //Taro.navigateTo({ url: '/pages/manageAppointments/index' });
     Taro.showToast({
       title: 'WIP',
       icon: 'error'
@@ -35,6 +34,7 @@ const UserPage = () => {
 
   return (
     <View className='user-page'>
+      <Loader />
       <View className='profile-container at-row at-row__align--center'>
         <View className='at-col at-col-1 at-col--auto'>
           <AtAvatar circle size='large' image={require('../../images/icons/no-user.png')}></AtAvatar>
@@ -45,7 +45,7 @@ const UserPage = () => {
         </View>
       </View>
 
-      <AtList>
+      <AtList className='control-panel'>
         <AtListItem
           title='新增预约'
           thumb={require('../../images/icons/add-apmt.png')}

@@ -29,6 +29,16 @@
 
 .no-records {
     padding: 100px 50px;
-    background-color: #FAFBFC;
+    background-color: #ffffff;
     text-align: center;
+}
+
+.at-tabs__header {
+    position: fixed;
+    opacity: 70%;
+    z-index: 200;
+}
+
+.at-tabs__body {
+    margin-top: 100px;
 }

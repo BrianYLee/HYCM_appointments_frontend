@@ -11,6 +11,7 @@ const AppointmentCard = ( { note = undefined, apmtInfo, handleCheckIn, handleChe
     return ( 
         <View className='appointment-card'>
             <AtCard
+                className='appointment-card-item'
                 title={apmtInfo.plate}
                 thumb={apmtInfo.checked_in
                     && require('../../images/icons/check.png')
