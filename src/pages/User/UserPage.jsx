@@ -16,11 +16,7 @@ const UserPage = () => {
 
   const handleAddAppointment = () => {
     // Handle navigation or actions for managing applications
-    // Taro.navigateTo({ url: '/pages/manageApplications/index' });
-    Taro.showToast({
-      title: 'WIP',
-      icon: 'error'
-    })
+    Taro.navigateTo({ url: '/forms/Appointment/index' });
   };
 
   const handleManageEmployees = () => {
