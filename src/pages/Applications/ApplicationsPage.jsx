@@ -56,23 +56,24 @@ const ApplicationsPage = () => {
         const res = await RegisterService.approve(userData.openid, currentApp);
         if (res && res.success) {
             hideLoader();
+            toggleReviewModal(false);
             Taro.showToast({
                 title: '通过成功！',
                 icon: 'success',
                 duration: 1500,
             });
             setTimeout(() => {
-                fetchAndSetAppointments();
+                fetchAndSetApplications();
             }, 1500);
         } else {
             hideLoader();
+            toggleReviewModal(false);
             Taro.showToast({
                 title: '通过失败',
                 icon: 'error',
                 duration: 1500
             });
         }
-        toggleReviewModal(false);
         updateCurrentApp({});
     }
 
@@ -81,23 +82,24 @@ const ApplicationsPage = () => {
         const res = await RegisterService.reject(userData.openid, currentApp);
         if (res && res.success) {
             hideLoader();
+            toggleReviewModal(false);
             Taro.showToast({
                 title: '拒绝了！',
                 icon: 'success',
                 duration: 1500,
             });
             setTimeout(() => {
-                fetchAndSetAppointments();
+                fetchAndSetApplications();
             }, 1500)
         } else {
             hideLoader();
+            toggleReviewModal(false);
             Taro.showToast({
                 title: '拒绝失败',
                 icon: 'error',
                 duration: 1500
             });
         }
-        toggleReviewModal(false);
         updateCurrentApp({});
     }
 
@@ -129,7 +131,7 @@ const ApplicationsPage = () => {
             <Modal
                 isOpened={showReviewModal}
                 title='怎么处理？'
-                contents={[{className: '.at-article__h1 applicant-name', text: `${currentApp.last_name, currentApp.first_name}`}]}
+                contents={[{className: '.at-article__h1 applicant-name', text: `${currentApp.last_name}${currentApp.first_name}`}]}
                 confirmText='通过'
                 onClose={handleCancel}
                 onCancel={handleCancel}
