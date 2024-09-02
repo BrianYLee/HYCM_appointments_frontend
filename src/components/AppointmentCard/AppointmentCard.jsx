@@ -18,8 +18,8 @@ const AppointmentCard = ( { note = undefined, apmtInfo, handleCheckIn, handleChe
                     || require('../../images/icons/warning.png')
                 }
                 extra={apmtInfo.checked_in
-                    && (<AtButton disabled={!(apmtInfo.scheduled_date == today)} onClick={() => handleCheckOut(apmtInfo)} size='small' circle>取消签到</AtButton>)
-                    || (<AtButton disabled={!(apmtInfo.scheduled_date == today)} onClick={() => handleCheckIn(apmtInfo)} size='small' circle type='primary'>签到</AtButton>)
+                    && ( apmtInfo.canCheckIn && (<AtButton disabled={!(apmtInfo.scheduled_date == today)} onClick={() => handleCheckOut(apmtInfo)} size='small' circle>取消签到</AtButton>))
+                    || ( apmtInfo.canCheckOut && (<AtButton disabled={!(apmtInfo.scheduled_date == today)} onClick={() => handleCheckIn(apmtInfo)} size='small' circle type='primary'>签到</AtButton>))
                 }
                 note={note}
             >
@@ -28,11 +28,15 @@ const AppointmentCard = ( { note = undefined, apmtInfo, handleCheckIn, handleChe
                         { apmtInfo.type && (<View className='infoListing'>类型</View>)}
                         { apmtInfo.studio_name && (<View className='infoListing'>拍摄机构</View>)}
                         { apmtInfo.manager_name && (<View className='infoListing'>摄影师</View>)}
+                        { apmtInfo.horse && (<View className='infoListing'>马会预约</View>)}
+                        { apmtInfo.created_date && (<View className='infoListing'>添加日期</View>)}
                     </View>
                     <View className='at-col at-col__offset-1'>
                         { apmtInfo.type && (<View className='infoListing'>{apmtInfo.type}</View>)}
                         { apmtInfo.studio_name && (<View className='infoListing'>{apmtInfo.studio_name}</View>)}
                         { apmtInfo.manager_name && (<View className='infoListing'>{apmtInfo.manager_name}</View>)}
+                        { apmtInfo.horse && (<View className='infoListing'>{apmtInfo.horse ? '有' : '没有'}</View>)}
+                        { apmtInfo.created_date && (<View className='infoListing'>{apmtInfo.created_date}</View>)}
                     </View>
                 </View>
             </AtCard>
