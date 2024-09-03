@@ -7,6 +7,20 @@ import { AtCard, AtButton} from 'taro-ui'
 // styling
 import './AppointmentCard.scss'
 
+const ButtonGroup = ({ apmtInfo, today, handleCheckIn=null, handleCheckOut=null, handleEdit=() => null }) => {
+    return (
+        <View className='button-group at-row'>
+            {apmtInfo?.canEdit 
+                ? (<AtButton className='at-col at-col-1' onClick={() => handleEdit(apmtInfo.id)} size='small' circle >修改</AtButton>)
+                : ( apmtInfo.checked_in
+                    && ( apmtInfo.canCheckIn && (<AtButton className='at-col at-col-1 at-col--auto' disabled={!(apmtInfo.scheduled_date == today)} onClick={() => handleCheckOut(apmtInfo)} size='small' circle>取消签到</AtButton>))
+                    || ( apmtInfo.canCheckOut && (<AtButton className='at-col at-col-1 at-col--auto' disabled={!(apmtInfo.scheduled_date == today)} onClick={() => handleCheckIn(apmtInfo)} size='small' circle type='primary'>签到</AtButton>))
+                )
+            }
+        </View>
+    )
+}
+
 const AppointmentCard = ( { note = undefined, apmtInfo, handleCheckIn, handleCheckOut, today } ) => {
     return ( 
         <View className='appointment-card'>
@@ -17,10 +31,7 @@ const AppointmentCard = ( { note = undefined, apmtInfo, handleCheckIn, handleChe
                     && require('../../images/icons/check.png')
                     || require('../../images/icons/warning.png')
                 }
-                extra={apmtInfo.checked_in
-                    && ( apmtInfo.canCheckIn && (<AtButton disabled={!(apmtInfo.scheduled_date == today)} onClick={() => handleCheckOut(apmtInfo)} size='small' circle>取消签到</AtButton>))
-                    || ( apmtInfo.canCheckOut && (<AtButton disabled={!(apmtInfo.scheduled_date == today)} onClick={() => handleCheckIn(apmtInfo)} size='small' circle type='primary'>签到</AtButton>))
-                }
+                extra={<ButtonGroup apmtInfo={apmtInfo} today={today} handleCheckIn={handleCheckIn} handleCheckOut={handleCheckOut} />}
                 note={note}
             >
                 <View className='at-row'>
@@ -69,4 +80,12 @@ export default AppointmentCard;
                         { apmtInfo.manager_name && (<View className='infoListing'>{apmtInfo.manager_name}</View>)}
                         { apmtInfo.plate && (<View className='infoListing'>{apmtInfo.plate}</View>)}
                     </View>
+*/
+
+
+/*
+                extra={apmtInfo.checked_in
+                    && ( apmtInfo.canCheckIn && (<AtButton disabled={!(apmtInfo.scheduled_date == today)} onClick={() => handleCheckOut(apmtInfo)} size='small' circle>取消签到</AtButton>))
+                    || ( apmtInfo.canCheckOut && (<AtButton disabled={!(apmtInfo.scheduled_date == today)} onClick={() => handleCheckIn(apmtInfo)} size='small' circle type='primary'>签到</AtButton>))
+                }
 */

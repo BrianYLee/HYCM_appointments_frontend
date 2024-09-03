@@ -1,5 +1,5 @@
 import Taro from '@tarojs/taro'
-import { APPOINTMENTS_URL, APPOINTMENT_CHECKIN_URL, APPOINTMENT_CHECKOUT_URL } from '../../constants/config';
+import { APPOINTMENTS_URL, APPOINTMENT_CHECKIN_URL, APPOINTMENT_CHECKOUT_URL, APPOINTMENT_EDIT_URL } from '../../constants/config';
 
 const getAppointments = async (openid, dateToFetch) => {
     console.log('AppointmentsService: getAppointments: invoked');
@@ -59,7 +59,7 @@ const postAppointment = async (apmtObj) => {
         });
         return { success: false, message: 'AppointmentsService: postAppointment: failed to post' };
     }
-}
+};
 
 const checkIn = async (apmtId) => {
     console.log('AppointmentsService: checkIn: invoked. ID=' + apmtId);
@@ -95,6 +95,61 @@ const checkIn = async (apmtId) => {
             icon: 'error'
         });
         return { success: false, message: 'AppointmentsService: checkIn: failed to post checkin' };
+    }
+};
+
+// for editting appointment. Admin only.
+const getAppointment = async (openId, apmtId) => {
+    console.log('AppointmentsService: getAppointment: invoked');
+    try {
+        const response = await Taro.request({
+            url: `${APPOINTMENT_EDIT_URL}?openid=${openId}&apmt=${apmtId}`,
+            method: 'GET',
+            header: {
+                'content-type': 'application/json'
+            }
+        });
+        if (response.statusCode === 200) {
+            // got appointments data, do something
+            console.log('AppointmentsService: getAppointment: got successful response');
+            console.log(response.data);
+            return { success: true, data: response.data };
+        } else {
+            throw new Error(response.data.message || 'failed to fetch appontment id: ' + apmtId + ' openid: ' + openId);
+        }
+    } catch (error) {
+        Taro.showToast({
+            title: error.message,
+            icon: 'none'
+        });
+        return { success: false, message: error.message };
+    }
+};
+
+const editAppointment = async (openId, apmtObj) => {
+    console.log('AppointmentsService: editAppointment: invoked');
+    try {
+        const response = await Taro.request({
+            url: APPOINTMENT_EDIT_URL,
+            method: 'POST',
+            data: {
+                ...apmtObj,
+                openid: openId
+            }
+        });
+        if (response.statusCode === 200) {
+            return { success: true };
+        } else {
+            console.log('cant edit appointment');
+            console.log(response);
+            throw new Error('AppointmentsService: editAppointment: failed to post appointment');
+        }
+    } catch (error) {
+        Taro.showToast({
+            title: error.message,
+            icon: 'error'
+        });
+        return { success: false, message: 'AppointmentsService: editAppointment: failed to post' };
     }
 };
 
@@ -139,5 +194,7 @@ export default {
     getAppointments,
     postAppointment,
     checkIn,
-    checkOut
+    checkOut,
+    getAppointment,
+    editAppointment
 }

@@ -78,13 +78,14 @@ const AppointmentsPage = () => {
     }
     const handleCheckInConfirm = async () => {
         showLoader();
+        toggleCheckInModal(false);
         const res = await AppointmentsService.checkIn(currentApmt.id);
         if (res && res.success) {
-            hideLoader();
             Taro.showToast({
                 title: '签到成功',
                 icon: 'success',
-                //duration: 1000,
+                mask: true,
+                duration: 1500,
                 complete: () => {
                     fetchAndSetAppointments();
                 }
@@ -94,10 +95,10 @@ const AppointmentsPage = () => {
             Taro.showToast({
                 title: '签到失败',
                 icon: 'fail',
-                duration: 1000
+                mask: true,
+                duration: 1500
             });
         }
-        toggleCheckInModal(false);
         updateCurrentApmt({});
     }
 
@@ -108,11 +109,13 @@ const AppointmentsPage = () => {
     }
     const handleCheckOutConfirm = async () => {
         showLoader();
+        toggleCheckOutModal(false);
         const res = await AppointmentsService.checkOut(currentApmt.id);
         if (res && res.success) {
             Taro.showToast({
                 title: '签离成功',
                 icon: 'success',
+                mask: true,
                 duration: 1500,
                 complete: () => {
                     fetchAndSetAppointments();
@@ -123,10 +126,10 @@ const AppointmentsPage = () => {
             Taro.showToast({
                 title: '签离失败',
                 icon: 'fail',
+                mask: true,
                 duration: 1500
             });
         }
-        toggleCheckOutModal(false);
         updateCurrentApmt({});
     }
 
@@ -134,6 +137,13 @@ const AppointmentsPage = () => {
         updateCurrentApmt({})
         toggleCheckInModal(false);
         toggleCheckOutModal(false);
+    }
+
+    const handleEdit = async (apmtId) => {
+        // fetch appointment by id
+        Taro.navigateTo({
+            url: `/forms/Appointment/index?apmt=${apmtId}`
+        });
     }
 
     useEffect(() => {
