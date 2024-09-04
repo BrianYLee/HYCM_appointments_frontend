@@ -56,6 +56,7 @@ export const AuthProvider = ({ children }) => {
             setIsAuthenticated(prev => prev = success);
             setIsEmployee(prev => prev = isEmployee);
             if(department == 'admin') {
+                console.log('department: ' + department)
                 setIsAdmin(prev => prev = true);
             }
             setUserData(newUserData);

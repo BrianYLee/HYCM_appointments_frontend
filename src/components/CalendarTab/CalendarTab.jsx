@@ -59,7 +59,7 @@ const CalendarTab = ({ currentDate, handleDateChange, handleRefresh=() => {}, ha
             />
             <AtFloatLayout isOpened={showCalendar} cancelText='cancel' onClose={onCalendarCancel}>
                 <AtCalendar currentDate={currentDate} format='YYYY-MM-DD' onSelectDate={e => (handleDateSelect(e))} isMultiSelect={false}/>
-                <AtButton type='primary' circle onClick={onDateConfirm.bind(this, 'error')}>Confirm</AtButton>
+                <AtButton type='primary' circle onClick={onDateConfirm.bind(this, 'error')}>确认</AtButton>
             </AtFloatLayout>
         </View>
     )
