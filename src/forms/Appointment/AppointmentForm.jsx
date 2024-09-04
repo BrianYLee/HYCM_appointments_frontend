@@ -7,6 +7,7 @@ import Modal from '../../components/Modal/Modal';
 import Loader from '../../components/Loader';
 import AppointmentsService from '../../services/Appointments/AppointmentsService';
 import { REFRESH_APMTS } from '../../constants/events';
+import { parseAppointment } from '../../utils/appointment';
 
 import { useAuth } from '../../context/AuthContext';
 import { useLoader } from '../../context/LoaderContext';
@@ -38,12 +39,15 @@ const AppointmentForm = () => {
         id: null,
         checked_in: false,
         scheduled_date: '',
+        scheduled_time_string: '',
         type: '',
+        areas: '',
         hotel: true,
         golf: true,
         horse: null,
         studio_name: '',
         manager_name: '',
+        bridal_name: '',
         plate: ''
     });
 
@@ -55,10 +59,13 @@ const AppointmentForm = () => {
     const [ formChanges, setFormChanges ] = useState({
         checked_in: false,
         scheduled_date: false,
+        scheduled_time_string: false,
+        areas: false,
         type: false,
         horse: false,
         studio_name: false,
         manager_name: false,
+        bridal_name: false,
         plate: false
     });
 
@@ -107,12 +114,15 @@ const AppointmentForm = () => {
                     id: data.id,
                     checked_in: data.checked_in,
                     scheduled_date: data.scheduled_date,
+                    scheduled_time_string: data.scheduled_time_string,
                     type: data.type,
+                    areas: data.areas,
                     hotel: data.hotel,
                     golf: data.golf,
                     horse: data.horse,
                     studio_name: data.studio_name,
                     manager_name: data.manager_name,
+                    bridal_name: data.bridal_name,
                     plate: data.plate
                 });
                 hideLoader();
@@ -164,12 +174,41 @@ const AppointmentForm = () => {
         setFormChanges({
             checked_in: false,
             scheduled_date: false,
+            scheduled_time_string: false,
+            areas: false,
             type: false,
             horse: false,
             studio_name: false,
             manager_name: false,
+            bridal_name: false,
             plate: false
         });
+    }
+
+    const parseClipBoard = () => {
+        Taro.getClipboardData({
+            success: (res) => {
+                const parsedData = parseAppointment(res.data);
+                console.log(parsedData);
+                //setApmtData({...parsedData});
+                if (parsedData != null) {
+                    setSelectedDate(parsedData.scheduled_date);
+                    setFormData({
+                        scheduled_date: parsedData.scheduled_date,
+                        scheduled_time_string: parsedData.scheduled_time_string,
+                        type: parsedData.type,
+                        areas: parsedData.areas,
+                        hotel: true,
+                        golf: true,
+                        horse: parsedData.horse,
+                        studio_name: parsedData.studio_name,
+                        manager_name: parsedData.manager_name,
+                        bridal_name: parsedData.bridal_name,
+                        plate: parsedData.plate
+                    });
+                }
+            }
+        })
     }
 
     const handleDateSelect = (dateObj) => {
@@ -381,7 +420,7 @@ const AppointmentForm = () => {
         return (<Loader />)
     }
     return (
-        <View className='index'>
+        <View className='index appointment-form'>
             <Loader />
             <AtMessage />
             <Modal isOpened={showSubmitModal} closeOnClickOverlay={true} title='没错吧？' 
@@ -412,8 +451,22 @@ const AppointmentForm = () => {
                 ]}
                 cancelText='再想想' confirmText='取消预约' onClose={() => toggleDeleteModal(false)} onCancel={() => toggleDeleteModal(false)} onConfirm={onDeleteConfirm} />
             <DocsHeader className='header' title={editMode ? '预约修改' : '新增拍摄预约'} desc='别填错了'/>
+            { !editMode && (<AtButton className='parse-btn' circle type='primary' onClick={parseClipBoard}>粘贴识别</AtButton>)}
             <View className='form-container'>
                     { editMode && (<AtSwitch title='签到' checked={formData.checked_in} onChange={(value) => handleInput(value, 'checked_in')} />)}
+                    <AtInput
+                        error={formErrors.type}
+                        name='type'
+                        title='类型'
+                        type='text'
+                        maxLength={20}
+                        placeholder='请选择'
+                        value={formData.type}
+                        disabled={true}
+                        editable={false}
+                        onClick={() => toggleTypeSelect(true)}
+                        className='text-input force-enable'
+                    />
                     <AtInput
                         error={formErrors.scheduled_date}
                         name='scheduled_date'
@@ -427,17 +480,24 @@ const AppointmentForm = () => {
                         className='text-input force-enable'
                     />
                     <AtInput
-                        error={formErrors.type}
-                        name='type'
-                        title='类型'
+                        error={formErrors.scheduled_time_string}
+                        name='scheduled_time_string'
+                        title='预计时间'
                         type='text'
-                        maxLength={20}
-                        placeholder='请选择'
-                        value={formData.type}
-                        disabled={true}
-                        editable={false}
-                        onClick={() => toggleTypeSelect(true)}
-                        className='text-input force-enable'
+                        placeholder='请填写'
+                        value={formData.scheduled_time_string}
+                        className='text-input'
+                        onChange={(value) => handleInput(value, 'scheduled_time_string')}
+                    />
+                    <AtInput
+                        error={formErrors.areas}
+                        name='areas'
+                        title='拍摄区域'
+                        type='text'
+                        placeholder='请填写'
+                        value={formData.areas}
+                        className='text-input'
+                        onChange={(value) => handleInput(value, 'areas')}
                     />
                     <AtInput
                         error={formErrors.horse}
@@ -472,11 +532,21 @@ const AppointmentForm = () => {
                         onChange={(value) => handleInput(value, 'manager_name')}
                     />
                     <AtInput
+                        error={formErrors.bridal_name}
+                        name='bridal_name'
+                        title='新人姓名'
+                        type='text'
+                        placeholder='请填写'
+                        value={formData.bridal_name}
+                        className='text-input'
+                        onChange={(value) => handleInput(value, 'bridal_name')}
+                    />
+                    <AtInput
                         error={formErrors.plate}
                         name='plate'
                         title='车牌号'
                         type='text'
-                        placeholder='确认不了请填写“na”'
+                        placeholder='确认不了请填写 “待定”'
                         value={formData.plate}
                         adjustPosition
                         onChange={(value) => handleInput(value, 'plate')}
