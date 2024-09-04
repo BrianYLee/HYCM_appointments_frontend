@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Taro from '@tarojs/taro';
 import { View } from '@tarojs/components'
-import { AtInput, AtButton, AtCalendar, AtFloatLayout, AtMessage, AtActionSheet, AtActionSheetItem } from 'taro-ui';
+import { AtInput, AtButton, AtCalendar, AtFloatLayout, AtMessage, AtActionSheet, AtActionSheetItem, AtSwitch } from 'taro-ui';
 import DocsHeader from '../../components/DocsHeader';
 import Modal from '../../components/Modal/Modal';
 import Loader from '../../components/Loader';
@@ -18,6 +18,7 @@ const AppointmentForm = () => {
     const { loading, showLoader, hideLoader } = useLoader();
 
     // common states
+    const [ initLoading, setInitLoading ] = useState(true);
     const [ selectedDate, setSelectedDate ] = useState('');
     const [ showCalendar, toggleCalendar ] = useState(false);
     const [ typeSelect, toggleTypeSelect ] = useState(false);
@@ -35,7 +36,7 @@ const AppointmentForm = () => {
 
     const [ formData, setFormData ] = useState({
         id: null,
-        checked_in: null,
+        checked_in: false,
         scheduled_date: '',
         type: '',
         hotel: true,
@@ -72,7 +73,13 @@ const AppointmentForm = () => {
     }, [formData.horse]);
 
     useEffect(() => {
+        if (initLoading) showLoader();
+        else if (!initLoading) hideLoader();
+    }, [initLoading]);
+
+    useEffect(() => {
         if (!isAdmin) {
+            setInitLoading(false);
             Taro.navigateBack();
         }
         const { apmt, date } = Taro.getCurrentInstance().router.params;
@@ -82,6 +89,10 @@ const AppointmentForm = () => {
         }
         else if (date) {
             handleInput(date, 'scheduled_date');
+            setInitLoading(false);
+        }
+        else {
+            setInitLoading(false);
         }
     }, []);
 
@@ -130,6 +141,8 @@ const AppointmentForm = () => {
                 duration: 2000
             });
             setTimeout(() => Taro.navigateBack(), 2000);
+        } finally {
+            setInitLoading(false);
         }
     };
 
@@ -145,6 +158,19 @@ const AppointmentForm = () => {
             }));
         }
     };
+
+    const resetForm = () => {
+        setFormData({ ...dataBeforeEdit });
+        setFormChanges({
+            checked_in: false,
+            scheduled_date: false,
+            type: false,
+            horse: false,
+            studio_name: false,
+            manager_name: false,
+            plate: false
+        });
+    }
 
     const handleDateSelect = (dateObj) => {
         console.log('calendar: got new date: ' + dateObj.value.end)
@@ -237,7 +263,7 @@ const AppointmentForm = () => {
                                 Taro.reLaunch();
                             }
                         });
-                    }, 1000);
+                    }, 500);
                 }
             } catch (err) {
                 hideLoader();
@@ -250,6 +276,20 @@ const AppointmentForm = () => {
             }
         } else if (editMode) {
             toggleEditSubmitModal(false);
+            let hasChanges = false;
+            for (let key in formChanges) {
+                if (formChanges[key] == true) {
+                    hasChanges = true;
+                    break;
+                }
+            }
+            if (!hasChanges) {
+                Taro.atMessage({
+                    message: '没有修改任何信息',
+                    type: 'warning'
+                });
+                return;
+            }
             try {
                 showLoader();
                 const submitRes = await AppointmentsService.editAppointment(userData.openid, formData);
@@ -268,7 +308,7 @@ const AppointmentForm = () => {
                                 Taro.reLaunch();
                             }
                         });
-                    }, 1000);
+                    }, 500);
                 } else {
                     hideLoader();
                     Taro.showToast({
@@ -316,7 +356,7 @@ const AppointmentForm = () => {
                             Taro.reLaunch();
                         }
                     });
-                }, 1000);
+                }, 500);
             } else {
                 hideLoader();
                 Taro.showToast({
@@ -337,6 +377,9 @@ const AppointmentForm = () => {
         }
     }
 
+    if (initLoading) {
+        return (<Loader />)
+    }
     return (
         <View className='index'>
             <Loader />
@@ -353,6 +396,7 @@ const AppointmentForm = () => {
                 cancelText='取消' confirmText='提交' onClose={() => toggleSubmitModal(false)} onCancel={() => toggleSubmitModal(false)} onConfirm={onConfirm} />
             <Modal isOpened={showEditSubmitModal} closeOnClickOverlay={true} title='改的对不对？' 
                 contents={[
+                    {className: '.at-article__h2 ' + (formChanges.checked_in && 'has-changes'), text: `签到：${formData.checked_in ? '已签到' : '未签到'}`},
                     {className: '.at-article__h2 ' + (formChanges.scheduled_date && 'has-changes'), text: `日期：${formData.scheduled_date}`},
                     {className: '.at-article__h2 ' + (formChanges.type && 'has-changes'), text: `类型：${formData.type}`},
                     {className: '.at-article__h2 ' + (formChanges.horse && 'has-changes'), text: `拍马：${horseInputVal}`},
@@ -369,6 +413,7 @@ const AppointmentForm = () => {
                 cancelText='再想想' confirmText='取消预约' onClose={() => toggleDeleteModal(false)} onCancel={() => toggleDeleteModal(false)} onConfirm={onDeleteConfirm} />
             <DocsHeader className='header' title={editMode ? '预约修改' : '新增拍摄预约'} desc='别填错了'/>
             <View className='form-container'>
+                    { editMode && (<AtSwitch title='签到' checked={formData.checked_in} onChange={(value) => handleInput(value, 'checked_in')} />)}
                     <AtInput
                         error={formErrors.scheduled_date}
                         name='scheduled_date'
@@ -450,6 +495,7 @@ const AppointmentForm = () => {
                         <AtActionSheetItem onClick={() => {handleInput(false, 'horse'); toggleHorseSelect(false);}}>不拍</AtActionSheetItem>
                     </AtActionSheet>
             </View>
+            { editMode && (<AtButton circle className='submit-btn' type='secondary' onClick={resetForm}>复原</AtButton>) }
             <AtButton circle className='submit-btn' type='primary' onClick={onSubmit}>提交</AtButton>
             { editMode && (<AtButton circle className='delete-btn' type='secondary' onClick={onDelete}>取消预约</AtButton>) }
         </View>

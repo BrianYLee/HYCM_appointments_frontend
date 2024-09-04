@@ -1,3 +1,3 @@
 export default definePageConfig({
-    navigationBarTitleText: '新增预约'
+    navigationBarTitleText: '预约管理'
 });
