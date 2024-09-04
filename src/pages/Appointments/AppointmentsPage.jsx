@@ -18,7 +18,7 @@ import { useAuth } from '../../context/AuthContext';
 import './AppointmentsPage.scss'
 
 const AppointmentsPage = () => {
-    const { isAuthenticated, isEmployee, userData, authLoading } = useAuth();
+    const { isAuthenticated, isEmployee, isAdmin, userData, authLoading } = useAuth();
     if ( !isAuthenticated && authLoading) {
         return (<Loader />);
     }
@@ -70,6 +70,7 @@ const AppointmentsPage = () => {
 
     const refresh = () => {
         if (isAuthenticated && isEmployee && userData?.openid) {
+            setToday(new Date().toLocaleDateString('en-CA', dateOpt));
             fetchAndSetAppointments();
         }
     }
@@ -141,10 +142,16 @@ const AppointmentsPage = () => {
         toggleCheckOutModal(false);
     }
 
-    const handleEdit = async (apmtId) => {
+    const handleEdit = (apmtId) => {
         // fetch appointment by id
         Taro.navigateTo({
             url: `/forms/Appointment/index?apmt=${apmtId}`
+        });
+    }
+
+    const handleNewAppointment = () => {
+        Taro.navigateTo({
+            url: `/forms/Appointment/index?date=${currentDate}`
         });
     }
 
@@ -170,7 +177,7 @@ const AppointmentsPage = () => {
     return (
         <View className='index'>
             <Loader />
-            <CalendarTab currentDate={currentDate} handleDateChange={handleDateChange} handleRefresh={refresh}></CalendarTab>
+            <CalendarTab currentDate={currentDate} handleDateChange={handleDateChange} handleRefresh={refresh} handleNewAppointment={isAdmin && handleNewAppointment} ></CalendarTab>
             <Modal
                 isOpened={showCheckInModal}
                 title='请确认车牌号'

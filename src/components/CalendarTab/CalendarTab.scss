@@ -21,12 +21,13 @@
 }
 
 .calendar-selector {
-
-
     text-align: center; /* centers horizontally */
-
     display: flex;
     justify-content: center;
     align-items: center; /* centers vertically */
+}
 
+.calendar-nav {
+    padding-left: 10px;
+    padding-right: 10px;
 }

@@ -1,5 +1,5 @@
 import Taro from '@tarojs/taro'
-import { APPOINTMENTS_URL, APPOINTMENT_CHECKIN_URL, APPOINTMENT_CHECKOUT_URL, APPOINTMENT_EDIT_URL } from '../../constants/config';
+import { APPOINTMENTS_URL, APPOINTMENT_CHECKIN_URL, APPOINTMENT_CHECKOUT_URL, APPOINTMENT_EDIT_URL, APPOINTMENT_DELETE_URL } from '../../constants/config';
 
 const getAppointments = async (openid, dateToFetch) => {
     console.log('AppointmentsService: getAppointments: invoked');
@@ -152,6 +152,33 @@ const editAppointment = async (openId, apmtObj) => {
     }
 };
 
+const deleteAppointment = async (openId, apmt) => {
+    console.log('AppointmentsService: deleteAppointment: invoked');
+    try {
+        const response = await Taro.request({
+            url: APPOINTMENT_DELETE_URL,
+            method: 'POST',
+            data: {
+                id: apmt,
+                openid: openId
+            }
+        });
+        if (response.statusCode === 200) {
+            return { success: true };
+        } else {
+            console.log('cant delete appointment');
+            console.log(response);
+            throw new Error('AppointmentsService: deleteAppointment: failed to post');
+        }
+    } catch (error) {
+        Taro.showToast({
+            title: error.message,
+            icon: 'error'
+        });
+        return { success: false, message: 'AppointmentsService: deleteAppointment: failed to post' };
+    }
+};
+
 const checkOut = async (apmtId) => {
     console.log('AppointmentsService: checkOut: invoked. ID=' + apmtId);
     try {
@@ -195,5 +222,6 @@ export default {
     checkIn,
     checkOut,
     getAppointment,
-    editAppointment
+    editAppointment,
+    deleteAppointment
 }

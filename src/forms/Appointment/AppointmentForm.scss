@@ -32,9 +32,23 @@
     margin-top: 20px;
     margin-bottom: 20px;
     width: 80%;
-    position: absolute;
-    bottom: 50px;
-    left: 0;
-    right: 0;
+    //position: absolute;
+    //bottom: 180px;
+    //left: 0;
+    //right: 0;
     text-align: center;
+}
+
+.delete-btn {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    width: 80%;
+    //position: absolute;
+    //bottom: 50px;
+    //left: 0;
+    //right: 0;
+    text-align: center;
+    border-color: #f60000;
+    background-color: #ffe1e1;
+    color: #f60000;
 }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Taro from '@tarojs/taro';
-import { View, Picker } from '@tarojs/components'
-import { AtForm, AtInput, AtButton, AtCalendar, AtListItem, AtCheckbox, AtFloatLayout, AtRadio, AtMessage, AtActionSheet, AtActionSheetItem } from 'taro-ui';
+import { View } from '@tarojs/components'
+import { AtInput, AtButton, AtCalendar, AtFloatLayout, AtMessage, AtActionSheet, AtActionSheetItem } from 'taro-ui';
 import DocsHeader from '../../components/DocsHeader';
 import Modal from '../../components/Modal/Modal';
 import Loader from '../../components/Loader';
@@ -49,6 +49,7 @@ const AppointmentForm = () => {
     // edit only states
     const [ editMode, setEditMode ] = useState(false);
     const [ showEditSubmitModal, toggleEditSubmitModal ] = useState(false);
+    const [ showDeleteModal, toggleDeleteModal ] = useState(false);
     const [ dataBeforeEdit, setApmtData ] = useState({});
     const [ formChanges, setFormChanges ] = useState({
         checked_in: false,
@@ -74,10 +75,13 @@ const AppointmentForm = () => {
         if (!isAdmin) {
             Taro.navigateBack();
         }
-        const { apmt } = Taro.getCurrentInstance().router.params;
-        if ( apmt && !(apmt === undefined) ) {
+        const { apmt, date } = Taro.getCurrentInstance().router.params;
+        if ( apmt ) {
             setEditMode(true);
             fetchAndSetAppointment(apmt);
+        }
+        else if (date) {
+            handleInput(date, 'scheduled_date');
         }
     }, []);
 
@@ -286,6 +290,53 @@ const AppointmentForm = () => {
         }
     };
 
+    const onDelete = () => {
+        if (editMode) {
+            toggleDeleteModal(true);
+        }
+    };
+
+    const onDeleteConfirm = async () => {
+        toggleDeleteModal(false);
+        try {
+            showLoader();
+            const submitRes = await AppointmentsService.deleteAppointment(userData.openid, dataBeforeEdit.id);
+            if (submitRes.success) {
+                hideLoader();
+                Taro.showToast({
+                    title: '取消了～',
+                    icon: 'success',
+                    mask: true,
+                    duration: 2000
+                });
+                setTimeout(() => {
+                    Taro.eventCenter.trigger(REFRESH_APMTS, dataBeforeEdit.scheduled_date);
+                    Taro.navigateBack({
+                        fail: (res) => {
+                            Taro.reLaunch();
+                        }
+                    });
+                }, 1000);
+            } else {
+                hideLoader();
+                Taro.showToast({
+                    title: 'error',
+                    icon: 'error',
+                    mask: true,
+                    duration: 2000
+                });
+            }
+        } catch (err) {
+            hideLoader();
+            console.error('some went wrong while posting', err);
+            Taro.showToast({
+                title: '取消失败',
+                icon: 'error',
+                mask: true
+            });
+        }
+    }
+
     return (
         <View className='index'>
             <Loader />
@@ -310,6 +361,12 @@ const AppointmentForm = () => {
                     {className: '.at-article__h2 ' + (formChanges.plate && 'has-changes'), text: `车牌：${formData.plate}`}
                 ]}
                 cancelText='取消' confirmText='提交' onClose={() => toggleEditSubmitModal(false)} onCancel={() => toggleEditSubmitModal(false)} onConfirm={onConfirm} />
+            <Modal isOpened={showDeleteModal} closeOnClickOverlay={true} title='确定把预约取消了？' 
+                contents={[
+                    {className: '.at-article__h2 ', text: `取消后就没了。`},
+                    {className: '.at-article__h2 ', text: `确认客人不来了是吧？`}
+                ]}
+                cancelText='再想想' confirmText='取消预约' onClose={() => toggleDeleteModal(false)} onCancel={() => toggleDeleteModal(false)} onConfirm={onDeleteConfirm} />
             <DocsHeader className='header' title={editMode ? '预约修改' : '新增拍摄预约'} desc='别填错了'/>
             <View className='form-container'>
                     <AtInput
@@ -393,8 +450,8 @@ const AppointmentForm = () => {
                         <AtActionSheetItem onClick={() => {handleInput(false, 'horse'); toggleHorseSelect(false);}}>不拍</AtActionSheetItem>
                     </AtActionSheet>
             </View>
-            <AtButton circle type='primary' onClick={() => console.log(formData)}>test</AtButton>
             <AtButton circle className='submit-btn' type='primary' onClick={onSubmit}>提交</AtButton>
+            { editMode && (<AtButton circle className='delete-btn' type='secondary' onClick={onDelete}>取消预约</AtButton>) }
         </View>
     )
 }

@@ -5,7 +5,7 @@ import { AtNavBar, AtCalendar, AtButton, AtFloatLayout } from 'taro-ui';
 
 import "./CalendarTab.scss";
 
-const CalendarTab = ({ currentDate, handleDateChange, handleRefresh=() => {} }) => {
+const CalendarTab = ({ currentDate, handleDateChange, handleRefresh=() => {}, handleNewAppointment }) => {
     const [ selectedDate, setSelectedDate ] = useState(currentDate || 'no date');
     const [ dateChinese, setChineseDate ] = useState('')
     const [ showCalendar, toggleCalendar ] = useState(false)
@@ -47,12 +47,15 @@ const CalendarTab = ({ currentDate, handleDateChange, handleRefresh=() => {} }) 
         <View>
             <AtNavBar
                 fixed
+                className='calendar-nav'
                 onClickLeftIcon={handleRefresh}
                 onClickRgIconSt={() => (toggleCalendar(true))}
+                onClickRgIconNd={handleNewAppointment}
                 color='#666'
                 title={dateChinese}
                 leftIconType='reload'
                 rightFirstIconType='calendar'
+                rightSecondIconType={handleNewAppointment ? 'add' : undefined}
             />
             <AtFloatLayout isOpened={showCalendar} cancelText='cancel' onClose={onCalendarCancel}>
                 <AtCalendar currentDate={currentDate} format='YYYY-MM-DD' onSelectDate={e => (handleDateSelect(e))} isMultiSelect={false}/>
