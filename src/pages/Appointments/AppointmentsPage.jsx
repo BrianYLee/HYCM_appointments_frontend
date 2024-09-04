@@ -37,9 +37,11 @@ const AppointmentsPage = () => {
         day: '2-digit'
     }
 
+    const defaultDate = new Date().toLocaleDateString('en-CA', dateOpt);
+
     const { showLoader, hideLoader } = useLoader();
-    const [ selectedDate, setDate ] = useState(new Date().toLocaleDateString('en-CA', dateOpt));
-    const [ today, setToday ] = useState(new Date().toLocaleDateString('en-CA', dateOpt));
+    const [ currentDate, setDate ] = useState(defaultDate);
+    const [ today, setToday ] = useState(defaultDate);
     const [ currentTab, setTab ] = useState(0);
     const [ appointments, updateAppointments ] = useState([]);
     const [ notArrived, updateNotArrived ] = useState([]);
@@ -49,10 +51,10 @@ const AppointmentsPage = () => {
     const [ showCheckOutModal, toggleCheckOutModal ] = useState(false);
 
     // request appointments data
-    const fetchAndSetAppointments = async () => {
+    const fetchAndSetAppointments = async (dateToFetch) => {
         showLoader();
-        console.log('fetching apmts for ' + selectedDate);
-        const res = await AppointmentsService.getAppointments(userData.openid, selectedDate);
+        console.log('fetching apmts for ' + dateToFetch || currentDate);
+        const res = await AppointmentsService.getAppointments(userData.openid, dateToFetch || currentDate);
         if (res && res.success) {
             updateAppointments(res.data);
             updateNotArrived(res.data.filter( apmt => !apmt.checked_in));
@@ -150,12 +152,17 @@ const AppointmentsPage = () => {
         if (isAuthenticated && isEmployee && userData?.openid) {
             fetchAndSetAppointments();
         }
-    }, [selectedDate]);
+    }, [currentDate]);
 
     useEffect(() => {
-        Taro.eventCenter.on(REFRESH_APMTS, fetchAndSetAppointments);
+        Taro.eventCenter.on(REFRESH_APMTS, (date) => {
+            if (isAuthenticated && isEmployee && userData?.openid) {
+                setDate(date);
+                fetchAndSetAppointments(date);
+            }
+        });
         return () => {
-            Taro.eventCenter.off(REFRESH_APMTS, fetchAndSetAppointments);
+            Taro.eventCenter.off();
         }
     }, []);
 
@@ -163,7 +170,7 @@ const AppointmentsPage = () => {
     return (
         <View className='index'>
             <Loader />
-            <CalendarTab currentDate={selectedDate} handleDateChange={handleDateChange} handleRefresh={refresh}></CalendarTab>
+            <CalendarTab currentDate={currentDate} handleDateChange={handleDateChange} handleRefresh={refresh}></CalendarTab>
             <Modal
                 isOpened={showCheckInModal}
                 title='请确认车牌号'
@@ -191,7 +198,7 @@ const AppointmentsPage = () => {
                 <AtTabsPane current={currentTab} index={0} >
                     {notArrived.length > 0 ? (
                         notArrived.map(( appointment ) => (
-                            <AppointmentCard apmtInfo={appointment} handleCheckIn={handleCheckIn} handleCheckOut={handleCheckOut} today={today}/>
+                            <AppointmentCard apmtInfo={appointment} handleCheckIn={handleCheckIn} handleCheckOut={handleCheckOut} handleEdit={handleEdit} today={today}/>
                         ))
                     ) : (
                     <View className='no-records'>
@@ -204,7 +211,7 @@ const AppointmentsPage = () => {
                 <AtTabsPane current={currentTab} index={1}>
                     {arrived.length > 0 ? (
                         arrived.map(( appointment ) => (
-                            <AppointmentCard apmtInfo={appointment} handleCheckIn={handleCheckIn} handleCheckOut={handleCheckOut} today={today}/>
+                            <AppointmentCard apmtInfo={appointment} handleCheckIn={handleCheckIn} handleCheckOut={handleCheckOut} handleEdit={handleEdit} today={today}/>
                         ))
                     ) : (
                     <View className='no-records'>
@@ -217,7 +224,7 @@ const AppointmentsPage = () => {
                 <AtTabsPane current={currentTab} index={2}>
                     {appointments.length > 0 ? (
                         appointments.map(( appointment ) => (
-                            <AppointmentCard apmtInfo={appointment} handleCheckIn={handleCheckIn} handleCheckOut={handleCheckOut} today={today}/>
+                            <AppointmentCard apmtInfo={appointment} handleCheckIn={handleCheckIn} handleCheckOut={handleCheckOut} handleEdit={handleEdit} today={today}/>
                         ))
                     ) : (
                     <View className='no-records'>

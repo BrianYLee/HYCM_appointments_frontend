@@ -1,6 +1,11 @@
 .appointment-card {
     padding-top: 10px;
     padding-bottom: 10px;
+
+    .at-card__content {
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
 }
 
 .appointment-card-item {
@@ -16,6 +21,9 @@
     opacity: 0;
 }
 
+.infoListing {
+    margin-bottom: 5px;
+}
 .edit-button {
     margin-left: 20px;
 }

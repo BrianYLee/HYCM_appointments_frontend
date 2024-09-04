@@ -21,7 +21,7 @@ const ButtonGroup = ({ apmtInfo, today, handleCheckIn=null, handleCheckOut=null,
     )
 }
 
-const AppointmentCard = ( { note = undefined, apmtInfo, handleCheckIn, handleCheckOut, today } ) => {
+const AppointmentCard = ( { note = undefined, apmtInfo, handleCheckIn, handleCheckOut, handleEdit=() => null, today } ) => {
     return ( 
         <View className='appointment-card'>
             <AtCard
@@ -31,7 +31,7 @@ const AppointmentCard = ( { note = undefined, apmtInfo, handleCheckIn, handleChe
                     && require('../../images/icons/check.png')
                     || require('../../images/icons/warning.png')
                 }
-                extra={<ButtonGroup apmtInfo={apmtInfo} today={today} handleCheckIn={handleCheckIn} handleCheckOut={handleCheckOut} />}
+                extra={<ButtonGroup apmtInfo={apmtInfo} today={today} handleCheckIn={handleCheckIn} handleCheckOut={handleCheckOut} handleEdit={handleEdit} />}
                 note={note}
             >
                 <View className='at-row'>
@@ -39,14 +39,14 @@ const AppointmentCard = ( { note = undefined, apmtInfo, handleCheckIn, handleChe
                         { apmtInfo.type && (<View className='infoListing'>类型</View>)}
                         { apmtInfo.studio_name && (<View className='infoListing'>拍摄机构</View>)}
                         { apmtInfo.manager_name && (<View className='infoListing'>摄影师</View>)}
-                        { apmtInfo.horse && (<View className='infoListing'>马会预约</View>)}
+                        { apmtInfo.horse !== undefined && (<View className='infoListing'>马会预约</View>)}
                         { apmtInfo.created_date && (<View className='infoListing'>添加日期</View>)}
                     </View>
                     <View className='at-col at-col__offset-1'>
                         { apmtInfo.type && (<View className='infoListing'>{apmtInfo.type}</View>)}
                         { apmtInfo.studio_name && (<View className='infoListing'>{apmtInfo.studio_name}</View>)}
                         { apmtInfo.manager_name && (<View className='infoListing'>{apmtInfo.manager_name}</View>)}
-                        { apmtInfo.horse && (<View className='infoListing'>{apmtInfo.horse ? '有' : '没有'}</View>)}
+                        { apmtInfo.horse != undefined && (<View className='infoListing'>{apmtInfo.horse ? '有' : '没有'}</View>)}
                         { apmtInfo.created_date && (<View className='infoListing'>{apmtInfo.created_date}</View>)}
                     </View>
                 </View>

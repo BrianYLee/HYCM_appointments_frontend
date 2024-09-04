@@ -29,11 +29,10 @@ const getAppointments = async (openid, dateToFetch) => {
     }
 };
 
-const postAppointment = async (apmtObj) => {
+const postAppointment = async (openId, apmtObj) => {
     console.log('AppointmentsService: postAppointment: invoked');
     try {
-        const userData = Taro.getStorageSync('userInfo');
-        if (!userData || !userData.openid) {
+        if (!openId) {
             console.log('no openid found')
             throw new Error('AppointmentsService: checkIn: no openid found');
         }
@@ -42,7 +41,7 @@ const postAppointment = async (apmtObj) => {
             method: 'POST',
             data: {
                 ...apmtObj,
-                openid: userData.openid
+                openid: openId
             }
         });
         if (response.statusCode === 200) {

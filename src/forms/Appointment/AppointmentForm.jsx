@@ -18,7 +18,7 @@ const AppointmentForm = () => {
     const { loading, showLoader, hideLoader } = useLoader();
 
     // common states
-    const [ selectedDate, setSelectedDate ] = useState(new Date().toISOString().split('T')[0]);
+    const [ selectedDate, setSelectedDate ] = useState('');
     const [ showCalendar, toggleCalendar ] = useState(false);
     const [ typeSelect, toggleTypeSelect ] = useState(false);
     const [ horseSelect, toggleHorseSelect ] = useState(false);
@@ -63,9 +63,9 @@ const AppointmentForm = () => {
     const typeOpts = ['样片', '客片'];
 
     useEffect(() => {
-        if (formData.horse === true) {
+        if (formData.horse == true) {
             setHorseInputValue('拍');
-        } else if (formData.horse === false) {
+        } else if (formData.horse == false) {
             setHorseInputValue('不拍');
         }
     }, [formData.horse]);
@@ -85,9 +85,9 @@ const AppointmentForm = () => {
         showLoader();
         try {
             const { success, data } = await AppointmentsService.getAppointment(userData.openid, apmt);
-            hideLoader();
             if (success && data) {
-                setApmtData(data);
+                setApmtData({...data});
+                setSelectedDate(data.scheduled_date);
                 setFormData({
                     id: data.id,
                     checked_in: data.checked_in,
@@ -100,6 +100,7 @@ const AppointmentForm = () => {
                     manager_name: data.manager_name,
                     plate: data.plate
                 });
+                hideLoader();
             }
             else {
                 hideLoader();
@@ -109,7 +110,11 @@ const AppointmentForm = () => {
                     mask: true,
                     duration: 2000
                 });
-                setTimeout(() => Taro.navigateBack(), 2000);
+                setTimeout(() => Taro.navigateBack({
+                    fail: (res) => {
+                        Taro.reLaunch();
+                    }
+                }), 2000);
             }
         } catch (err) {
             console.log('error fetching apmtid ' + apmt);
@@ -125,15 +130,15 @@ const AppointmentForm = () => {
     };
 
     const handleInput = (value, field) => {
-        setFormData({
-            ...formData,
+        setFormData(prev => ({
+            ...prev,
             [field]: value
-        });
+        }));
         if (editMode) {
-            setFormChanges({
-                ...formChanges,
+            setFormChanges(prev => ({
+                ...prev,
                 [field]: (dataBeforeEdit[field] != value)
-            });
+            }));
         }
     };
 
@@ -212,34 +217,72 @@ const AppointmentForm = () => {
             toggleSubmitModal(false);
             try {
                 showLoader();
-                const submitRes = await AppointmentsService.postAppointment(formData);
+                const submitRes = await AppointmentsService.postAppointment(userData.openid, formData);
                 if (submitRes.success) {
                     hideLoader();
                     Taro.showToast({
                         title: '提交成功',
                         icon: 'success',
+                        mask: true,
                         duration: 2000
                     });
                     setTimeout(() => {
-                        Taro.eventCenter.trigger(REFRESH_APMTS, {});
+                        Taro.eventCenter.trigger(REFRESH_APMTS, formData.scheduled_date);
                         Taro.navigateBack({
                             fail: (res) => {
                                 Taro.reLaunch();
                             }
                         });
-                    }, 2000);
+                    }, 1000);
                 }
             } catch (err) {
                 hideLoader();
                 console.error('some went wrong while posting', err);
                 Taro.showToast({
                     title: '提交失败',
-                    icon: 'error'
+                    icon: 'error',
+                    mask: true
                 });
             }
         } else if (editMode) {
             toggleEditSubmitModal(false);
-            console.log('WIP');
+            try {
+                showLoader();
+                const submitRes = await AppointmentsService.editAppointment(userData.openid, formData);
+                if (submitRes.success) {
+                    hideLoader();
+                    Taro.showToast({
+                        title: '更新了～',
+                        icon: 'success',
+                        mask: true,
+                        duration: 2000
+                    });
+                    setTimeout(() => {
+                        Taro.eventCenter.trigger(REFRESH_APMTS, dataBeforeEdit.scheduled_date);
+                        Taro.navigateBack({
+                            fail: (res) => {
+                                Taro.reLaunch();
+                            }
+                        });
+                    }, 1000);
+                } else {
+                    hideLoader();
+                    Taro.showToast({
+                        title: 'error',
+                        icon: 'error',
+                        mask: true,
+                        duration: 2000
+                    });
+                }
+            } catch (err) {
+                hideLoader();
+                console.error('some went wrong while posting', err);
+                Taro.showToast({
+                    title: '提交失败',
+                    icon: 'error',
+                    mask: true
+                });
+            }
         }
     };
 
@@ -259,15 +302,15 @@ const AppointmentForm = () => {
                 cancelText='取消' confirmText='提交' onClose={() => toggleSubmitModal(false)} onCancel={() => toggleSubmitModal(false)} onConfirm={onConfirm} />
             <Modal isOpened={showEditSubmitModal} closeOnClickOverlay={true} title='改的对不对？' 
                 contents={[
-                    {className: '.at-article__h2 ' + (!formChanges.scheduled_date && 'has-changes'), text: `日期：${formData.scheduled_date}`},
-                    {className: '.at-article__h2 ' + (!formChanges.type && 'has-changes'), text: `类型：${formData.type}`},
-                    {className: '.at-article__h2 ' + (!formChanges.horse && 'has-changes'), text: `拍马：${horseInputVal}`},
-                    {className: '.at-article__h2 ' + (!formChanges.studio_name && 'has-changes'), text: `机构：${formData.studio_name}`},
-                    {className: '.at-article__h2 ' + (!formChanges.manager_name && 'has-changes'), text: `老师：${formData.manager_name}`},
-                    {className: '.at-article__h2 ' + (!formChanges.plate && 'has-changes'), text: `车牌：${formData.plate}`}
+                    {className: '.at-article__h2 ' + (formChanges.scheduled_date && 'has-changes'), text: `日期：${formData.scheduled_date}`},
+                    {className: '.at-article__h2 ' + (formChanges.type && 'has-changes'), text: `类型：${formData.type}`},
+                    {className: '.at-article__h2 ' + (formChanges.horse && 'has-changes'), text: `拍马：${horseInputVal}`},
+                    {className: '.at-article__h2 ' + (formChanges.studio_name && 'has-changes'), text: `机构：${formData.studio_name}`},
+                    {className: '.at-article__h2 ' + (formChanges.manager_name && 'has-changes'), text: `老师：${formData.manager_name}`},
+                    {className: '.at-article__h2 ' + (formChanges.plate && 'has-changes'), text: `车牌：${formData.plate}`}
                 ]}
                 cancelText='取消' confirmText='提交' onClose={() => toggleEditSubmitModal(false)} onCancel={() => toggleEditSubmitModal(false)} onConfirm={onConfirm} />
-            <DocsHeader className='header' title='新增拍摄预约' desc='别填错了'/>
+            <DocsHeader className='header' title={editMode ? '预约修改' : '新增拍摄预约'} desc='别填错了'/>
             <View className='form-container'>
                     <AtInput
                         error={formErrors.scheduled_date}
@@ -338,7 +381,7 @@ const AppointmentForm = () => {
                         className='text-input'
                     />
                     <AtFloatLayout isOpened={showCalendar} onClose={() => toggleCalendar(false)} cancelText='Cancel'>
-                        <AtCalendar currentDate={selectedDate} format='YYYY-MM-DD' onSelectDate={e => (handleDateSelect(e))} isMultiSelect={false}/>
+                        <AtCalendar currentDate={formData.scheduled_date} format='YYYY-MM-DD' onSelectDate={e => (handleDateSelect(e))} isMultiSelect={false}/>
                         <AtButton type='primary' circle onClick={onDateConfirm.bind(this, 'error')}>Confirm</AtButton>
                     </AtFloatLayout>
                     <AtActionSheet isOpened={typeSelect} title='「客片」还是「样片」？'>
@@ -350,6 +393,7 @@ const AppointmentForm = () => {
                         <AtActionSheetItem onClick={() => {handleInput(false, 'horse'); toggleHorseSelect(false);}}>不拍</AtActionSheetItem>
                     </AtActionSheet>
             </View>
+            <AtButton circle type='primary' onClick={() => console.log(formData)}>test</AtButton>
             <AtButton circle className='submit-btn' type='primary' onClick={onSubmit}>提交</AtButton>
         </View>
     )
