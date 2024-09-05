@@ -41,8 +41,6 @@ const HomePage = () => {
 
     }
     const handleClick2 = (userInfo) => {
-        console.log('userInfo: ');
-        console.log(userInfo?.detail?.userInfo);
     }
     return (
         <View>

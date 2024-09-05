@@ -2,7 +2,6 @@ import Taro from '@tarojs/taro'
 import { APPOINTMENTS_URL, APPOINTMENT_CHECKIN_URL, APPOINTMENT_CHECKOUT_URL, APPOINTMENT_EDIT_URL, APPOINTMENT_DELETE_URL } from '../../constants/config';
 
 const getAppointments = async (openid, dateToFetch) => {
-    console.log('AppointmentsService: getAppointments: invoked');
     try {
         const response = await Taro.request({
             url: `${APPOINTMENTS_URL}?openid=${openid}&date=${dateToFetch}`,
@@ -14,8 +13,6 @@ const getAppointments = async (openid, dateToFetch) => {
 
         if (response.statusCode === 200) {
             // got appointments data, do something
-            console.log('AppointmentsService: getAppointments: got successful response');
-            console.log(response.data);
             return { success: true, data: response.data };
         } else {
             throw new Error(response.data.message || 'failed to fetch appontments');
@@ -30,10 +27,8 @@ const getAppointments = async (openid, dateToFetch) => {
 };
 
 const postAppointment = async (openId, apmtObj) => {
-    console.log('AppointmentsService: postAppointment: invoked');
     try {
         if (!openId) {
-            console.log('no openid found')
             throw new Error('AppointmentsService: checkIn: no openid found');
         }
         const response = await Taro.request({
@@ -61,11 +56,9 @@ const postAppointment = async (openId, apmtObj) => {
 };
 
 const checkIn = async (apmtId) => {
-    console.log('AppointmentsService: checkIn: invoked. ID=' + apmtId);
     try {
         const userData = Taro.getStorageSync('userInfo');
         if (!userData || !userData.openid) {
-            console.log('no openid found')
             throw new Error('AppointmentsService: checkIn: no openid found');
         }
         const response = await Taro.request({
@@ -81,7 +74,6 @@ const checkIn = async (apmtId) => {
         });
         if (response.statusCode === 200) {
             // checkin posted
-            console.log('AppointmentsService: checkIn: got successful response');
             return { success: true };
         } else {
             console.log('wtf happened? ');
@@ -99,7 +91,6 @@ const checkIn = async (apmtId) => {
 
 // for editting appointment. Admin only.
 const getAppointment = async (openId, apmtId) => {
-    console.log('AppointmentsService: getAppointment: invoked');
     try {
         const response = await Taro.request({
             url: `${APPOINTMENT_EDIT_URL}?openid=${openId}&apmt=${apmtId}`,
@@ -110,8 +101,6 @@ const getAppointment = async (openId, apmtId) => {
         });
         if (response.statusCode === 200) {
             // got appointments data, do something
-            console.log('AppointmentsService: getAppointment: got successful response');
-            console.log(response.data);
             return { success: true, data: response.data };
         } else {
             throw new Error(response.data.message || 'failed to fetch appontment id: ' + apmtId + ' openid: ' + openId);
@@ -126,7 +115,6 @@ const getAppointment = async (openId, apmtId) => {
 };
 
 const editAppointment = async (openId, apmtObj) => {
-    console.log('AppointmentsService: editAppointment: invoked');
     try {
         const response = await Taro.request({
             url: APPOINTMENT_EDIT_URL,
@@ -153,7 +141,6 @@ const editAppointment = async (openId, apmtObj) => {
 };
 
 const deleteAppointment = async (openId, apmt) => {
-    console.log('AppointmentsService: deleteAppointment: invoked');
     try {
         const response = await Taro.request({
             url: APPOINTMENT_DELETE_URL,
@@ -180,11 +167,9 @@ const deleteAppointment = async (openId, apmt) => {
 };
 
 const checkOut = async (apmtId) => {
-    console.log('AppointmentsService: checkOut: invoked. ID=' + apmtId);
     try {
         const userData = Taro.getStorageSync('userInfo');
         if (!userData || !userData.openid) {
-            console.log('no openid found')
             throw new Error('AppointmentsService: checkOut: no openid found');
         }
         const response = await Taro.request({
@@ -200,7 +185,6 @@ const checkOut = async (apmtId) => {
         });
         if (response.statusCode === 200) {
             // check-out posted
-            console.log('AppointmentsService: checkOut: got successful response');
             return { success: true };
         } else {
             console.log('wtf happened? ');

@@ -17,14 +17,12 @@ const WelcomePage = () => {
     useEffect(() => {
         if (isAuthenticated && isEmployee) {
             // go to appointments page
-            console.log('authenticated and is employee')
             Taro.switchTab({
                 url: '/pages/Appointments/index'
             });
         }
         if (isAuthenticated && !isEmployee) {
             // go to register page
-            console.log('authenticated and NOT employee')
             Taro.redirectTo({
                 url: '/pages/Registration/index'
             });

@@ -21,10 +21,8 @@ const ApplicationsPage = () => {
         return (<Loader />);
     }
     else if ( !isAuthenticated && !authLoading) {
-        console.log('AppointmentsPage: user not authenticated');
         return (<NotSignedIn/>);
     } else if ( isAuthenticated && !isAdmin ) {
-        console.log('AppointmentsPage: user is not an employee status');
         return (<NotEmployee/>);
     }
 
@@ -115,8 +113,6 @@ const ApplicationsPage = () => {
     }, []);
 
     useEffect(() => {
-        console.log('applications: ');
-        console.log(applications);
         if (applications && applications.length > 0) {
             updatePending(applications.filter( app => app.is_approved == null));
             updateApproved(applications.filter( app => app.is_approved == true));

@@ -7,7 +7,6 @@ import './NotSignedIn.scss';
 const NotSignedIn = () => {
     const handleSignIn = () => {
         // Add your sign-in logic here, e.g., navigate to the sign-in page or call a sign-in API
-        console.log('Sign-in button clicked');
     };
 
     return (

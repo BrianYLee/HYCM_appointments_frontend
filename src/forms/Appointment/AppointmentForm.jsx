@@ -15,8 +15,8 @@ import { useLoader } from '../../context/LoaderContext';
 import './AppointmentForm.scss';
 
 const AppointmentForm = () => {
-    const { isAuthenticated, isEmployee, isAdmin, userData } = useAuth();
-    const { loading, showLoader, hideLoader } = useLoader();
+    const { isAdmin, userData } = useAuth();
+    const { showLoader, hideLoader } = useLoader();
 
     // common states
     const [ initLoading, setInitLoading ] = useState(true);
@@ -142,7 +142,6 @@ const AppointmentForm = () => {
                 }), 2000);
             }
         } catch (err) {
-            console.log('error fetching apmtid ' + apmt);
             hideLoader();
             Taro.showToast({
                 title: 'error fetching apmt',
@@ -189,8 +188,6 @@ const AppointmentForm = () => {
         Taro.getClipboardData({
             success: (res) => {
                 const parsedData = parseAppointment(res.data);
-                console.log(parsedData);
-                //setApmtData({...parsedData});
                 if (parsedData != null) {
                     setSelectedDate(parsedData.scheduled_date);
                     setFormData({
@@ -212,7 +209,6 @@ const AppointmentForm = () => {
     }
 
     const handleDateSelect = (dateObj) => {
-        console.log('calendar: got new date: ' + dateObj.value.end)
         setSelectedDate(dateObj.value.end);
     };
 
@@ -281,7 +277,6 @@ const AppointmentForm = () => {
     };
 
     const onConfirm = async () => {
-        console.log('confirmed');
         if (!editMode) {
             toggleSubmitModal(false);
             try {

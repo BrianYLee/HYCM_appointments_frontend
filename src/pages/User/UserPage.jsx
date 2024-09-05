@@ -25,7 +25,6 @@ const UserPage = () => {
     };
 
     const handleManageApplications = () => {
-        console.log('manage applications');
         Taro.navigateTo({ url: '/pages/Applications/index'});
     }
     

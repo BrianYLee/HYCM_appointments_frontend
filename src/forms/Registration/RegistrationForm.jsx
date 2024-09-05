@@ -79,7 +79,6 @@ const RegistrationForm = () => {
     }
 
     const onConfirm = async () => {
-        console.log('confirmed');
         toggleSubmitModal(false);
         try {
             showLoader();

@@ -21,11 +21,8 @@ const WelcomePage = () => {
 
     const fetchAndSetApplication = async () => {
         showLoader();
-        console.log('fetchApplication invoked');
         const res = await RegisterService.getApplication(userData.openid);
         if (res && res.success) {
-            console.log('got applications');
-            console.log(res.applications);
             updateApplications(res.applications);
             hideLoader();
         }
@@ -39,7 +36,6 @@ const WelcomePage = () => {
     }
 
     const refreshApplications = () => {
-        console.log('refreshing applications');
         fetchAndSetApplication();
     }
 
@@ -58,7 +54,6 @@ const WelcomePage = () => {
     useEffect(() => {
         const approved = applications.filter(application => application.is_approved == true);
         if (approved.length > 0) {
-            console.log('application approved. relogging');
             Taro.showToast({
                 title: '审核通过！',
                 icon: 'success'

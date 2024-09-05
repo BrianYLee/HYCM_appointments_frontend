@@ -3,7 +3,6 @@ import { REGISTER_URL, APPLICATIONS_URL, APPLICATIONS_APPROVE_URL, APPLICATIONS_
 
 const RegisterService = {
     register: async (openid, lName, fName, dept, phone) => {
-        console.log('RegisterService: register: invoked');
         try {
             const response = await Taro.request({
                 url: REGISTER_URL,
@@ -18,7 +17,6 @@ const RegisterService = {
             });
 
             if (response.statusCode === 200) {
-                console.log('RegisterService: register: success');
                 return {
                     success: true,
                     message: '提交成功'
@@ -34,7 +32,6 @@ const RegisterService = {
     },
 
     getApplication: async (openid) => {
-        console.log('RegisterService: getApplication: invoked');
         try {
             const response = await Taro.request({
                 url: `${REGISTER_URL}?openid=${openid}`,
@@ -51,7 +48,6 @@ const RegisterService = {
                     applications
                 };
             } else {
-                console.log('RegisterService: getApplication: failed');
                 throw new Error('RegisterService: getApplication: failed');
             }
         } catch (error) {
@@ -61,7 +57,6 @@ const RegisterService = {
     },
 
     getApplications: async (openid) => {
-        console.log('RegisterService: getApplications: invoked');
         try {
             const response = await Taro.request({
                 url: `${APPLICATIONS_URL}?openid=${openid}`,
@@ -88,7 +83,6 @@ const RegisterService = {
     },
 
     approve: async (openid, application) => {
-        console.log('RegisterService: approve: invoked');
         try {
             const response = await Taro.request({
                 url: APPLICATIONS_APPROVE_URL,
@@ -100,7 +94,6 @@ const RegisterService = {
                 }
             });
             if (response.statusCode === 200) {
-                console.log('RegisterService: approve: success');
                 return {
                     success: true,
                     message: '提交成功'
@@ -128,13 +121,11 @@ const RegisterService = {
                 }
             });
             if (response.statusCode === 200) {
-                console.log('RegisterService: reject: success');
                 return {
                     success: true,
                     message: '提交成功'
                 };
             } else {
-                console.log('RegisterService: reject: post failed');
                 throw new Error('RegisterService: reject: post failed');
             }
         } catch (error) {

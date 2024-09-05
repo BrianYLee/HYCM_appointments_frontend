@@ -56,7 +56,6 @@ export const AuthProvider = ({ children }) => {
             setIsAuthenticated(prev => prev = success);
             setIsEmployee(prev => prev = isEmployee);
             if(department == 'admin') {
-                console.log('department: ' + department)
                 setIsAdmin(prev => prev = true);
             }
             setUserData(newUserData);
@@ -105,7 +104,6 @@ export const AuthProvider = ({ children }) => {
     }
 
     const logout = () => {
-        console.log('AuthContext: logout: invoked')
         Taro.removeStorageSync('userInfo');
         setIsAuthenticated(prev => prev = false);
         setIsEmployee(prev => prev = false);

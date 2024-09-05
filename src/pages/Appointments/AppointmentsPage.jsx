@@ -23,10 +23,8 @@ const AppointmentsPage = () => {
         return (<Loader />);
     }
     else if ( !isAuthenticated && !authLoading) {
-        console.log('AppointmentsPage: user not authenticated');
         return (<NotSignedIn/>);
     } else if ( isAuthenticated && !isEmployee ) {
-        console.log('AppointmentsPage: user is not an employee status');
         return (<NotEmployee/>);
     }
 
@@ -53,7 +51,6 @@ const AppointmentsPage = () => {
     // request appointments data
     const fetchAndSetAppointments = async (dateToFetch) => {
         showLoader();
-        console.log('fetching apmts for ' + dateToFetch || currentDate);
         const res = await AppointmentsService.getAppointments(userData.openid, dateToFetch || currentDate);
         if (res && res.success) {
             updateAppointments(res.data);
@@ -64,7 +61,6 @@ const AppointmentsPage = () => {
     };
 
     const handleDateChange = (date) => {
-        console.log('got new date from calendar: ' + date);
         setDate(prev => (prev = date));
     }
 

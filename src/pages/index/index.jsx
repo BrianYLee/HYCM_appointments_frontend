@@ -28,11 +28,6 @@ const Index = () => {
     });
   }, [show, showModal]);
 
-  if (isAuthenticated) {
-    console.log('Index: user is authenticated');
-  } else {
-    console.log('not authenticated...');
-  }
   return (
     <View className="wrapper">
       <Image className="logo" src={logo} />
