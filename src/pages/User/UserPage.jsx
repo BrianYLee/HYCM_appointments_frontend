@@ -37,7 +37,7 @@ const UserPage = () => {
             <Loader />
             <View className='profile-container at-row at-row__align--center'>
                 <View className='at-col at-col-1 at-col--auto'>
-                    <AtAvatar circle size='large' image={require('../../images/icons/no-user.png')} />
+                    <AtAvatar circle size='large' image={require('../../images/rw_logo.jpg')} />
                 </View>
                 <View className='at-col'>
                     <View className='at-article__h1'>{userData.employee_name}</View>
@@ -51,12 +51,6 @@ const UserPage = () => {
                     thumb={require('../../images/icons/add-apmt.png')}
                     arrow='right'
                     onClick={handleAddAppointment}
-                />)}
-                { isAdmin && (<AtListItem
-                    title='员工管理'
-                    thumb={require('../../images/icons/employees.png')}
-                    arrow='right'
-                    onClick={handleManageEmployees}
                 />)}
                 { isAdmin && (<AtListItem
                     title='员工注册审核'
@@ -76,3 +70,12 @@ const UserPage = () => {
 };
 
 export default UserPage;
+
+/*
+                { isAdmin && (<AtListItem
+                    title='员工管理'
+                    thumb={require('../../images/icons/employees.png')}
+                    arrow='right'
+                    onClick={handleManageEmployees}
+                />)}
+*/
