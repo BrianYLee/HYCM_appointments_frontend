@@ -78,7 +78,7 @@ const AppointmentsPage = () => {
     const handleCheckInConfirm = async () => {
         showLoader();
         toggleCheckInModal(false);
-        const res = await AppointmentsService.checkIn(currentApmt.id);
+        const res = await AppointmentsService.checkIn(userData.openid, currentApmt.id);
         if (res && res.success) {
             Taro.showToast({
                 title: '签到成功',
@@ -109,7 +109,7 @@ const AppointmentsPage = () => {
     const handleCheckOutConfirm = async () => {
         showLoader();
         toggleCheckOutModal(false);
-        const res = await AppointmentsService.checkOut(currentApmt.id);
+        const res = await AppointmentsService.checkOut(userData.openid, currentApmt.id);
         if (res && res.success) {
             Taro.showToast({
                 title: '签离成功',

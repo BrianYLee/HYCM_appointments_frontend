@@ -55,17 +55,16 @@ const postAppointment = async (openId, apmtObj) => {
     }
 };
 
-const checkIn = async (apmtId) => {
+const checkIn = async (openId, apmtId) => {
     try {
-        const userData = Taro.getStorageSync('userInfo');
-        if (!userData || !userData.openid) {
+        if (!openId) {
             throw new Error('AppointmentsService: checkIn: no openid found');
         }
         const response = await Taro.request({
             url: APPOINTMENT_CHECKIN_URL,
             method: 'POST',
             data: {
-                openId: userData.openid,
+                openId: openId,
                 apmtId: apmtId
             },
             header: {
@@ -166,17 +165,16 @@ const deleteAppointment = async (openId, apmt) => {
     }
 };
 
-const checkOut = async (apmtId) => {
+const checkOut = async (openId, apmtId) => {
     try {
-        const userData = Taro.getStorageSync('userInfo');
-        if (!userData || !userData.openid) {
+        if (!openId) {
             throw new Error('AppointmentsService: checkOut: no openid found');
         }
         const response = await Taro.request({
             url: APPOINTMENT_CHECKOUT_URL,
             method: 'POST',
             data: {
-                openId: userData.openid,
+                openId: openId,
                 apmtId: apmtId
             },
             header: {
