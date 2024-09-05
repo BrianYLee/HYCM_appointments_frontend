@@ -11,7 +11,7 @@ import './UserPage.scss';
 
 const UserPage = () => {  
     const { isAdmin, userData, logout } = useAuth();
-    const { loading, showLoader, hideLoader } = useLoader();
+    const { loading } = useLoader();
 
     const handleAddAppointment = () => {
         Taro.navigateTo({ url: '/forms/Appointment/index' });

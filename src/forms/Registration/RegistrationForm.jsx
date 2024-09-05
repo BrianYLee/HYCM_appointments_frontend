@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Taro from '@tarojs/taro';
-import { View, Picker } from '@tarojs/components'
-import { AtForm, AtInput, AtButton, AtList, AtListItem, AtFloatLayout, AtRadio, AtMessage } from 'taro-ui';
+import { View } from '@tarojs/components'
+import { AtInput, AtButton, AtFloatLayout, AtRadio, AtMessage } from 'taro-ui';
 import DocsHeader from '../../components/DocsHeader';
 import Modal from '../../components/Modal/Modal';
 import RegisterService from '../../services/Register/RegisterService';
@@ -128,7 +128,6 @@ const RegistrationForm = () => {
                         value={formData.lName}
                         adjustPosition
                         onChange={(value) => handleInput(value, 'lName')}
-                        //className={formErrors.lName ? 'text-input input-error' : 'text-input '}
                         className='text-input'
                     />
                     <AtInput
@@ -142,7 +141,6 @@ const RegistrationForm = () => {
                         value={formData.fName}
                         adjustPosition
                         onChange={(value) => handleInput(value, 'fName')}
-                        //className={formErrors.fName ? 'text-input input-error' : 'text-input '}
                         className='text-input'
                     />
                     <AtInput
@@ -155,8 +153,6 @@ const RegistrationForm = () => {
                         disabled={true}
                         editable={false}
                         onClick={() => toggleDeptSelect(true)}
-                        //onChange={(value) => handleInput(value, 'fName')}
-                        //className={formErrors.fName ? 'text-input force-enable input-error' : 'text-input force-enable'}
                         className='text-input force-enable'
                     />
                     <AtFloatLayout isOpened={showDeptSelect} onClose={() => toggleDeptSelect(false)} cancelText='Cancel'>
@@ -176,7 +172,6 @@ const RegistrationForm = () => {
                         value={formData.phone}
                         adjustPosition
                         onChange={(value) => handleInput(value, 'phone')}
-                        //className={formErrors.phone ? 'text-input input-error' : 'text-input'}
                         className='text-input'
                     />
             </View>

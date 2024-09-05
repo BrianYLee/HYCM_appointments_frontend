@@ -62,36 +62,3 @@ const AppointmentCard = ( { note = undefined, apmtInfo, handleCheckIn, handleChe
 };
 
 export default AppointmentCard;
-
-/*
-                    <View className='at-col at-col-1 at-col--auto'>
-                        { apmtInfo.id && (<View className='infoListing'>ID</View>)}
-                        { apmtInfo.scheduled_date && (<View className='infoListing'>DATE</View>)}
-                        { apmtInfo.type && (<View className='infoListing'>TYPE</View>)}
-                        { apmtInfo.hotel && (<View className='infoListing'>HOTEL</View>)}
-                        { apmtInfo.golf && (<View className='infoListing'>GOLF</View>)}
-                        { apmtInfo.horse && (<View className='infoListing'>HORSE</View>)}
-                        { apmtInfo.studio_name && (<View className='infoListing'>STUDIONAME</View>)}
-                        { apmtInfo.manager_name && (<View className='infoListing'>MANAGERNAME</View>)}
-                        { apmtInfo.plate && (<View className='infoListing'>PLATE</View>)}
-                    </View>
-                    <View className='at-col at-col__offset-1'>
-                        { apmtInfo.id && (<View className='infoListing'>{apmtInfo.id}</View>)}
-                        { apmtInfo.scheduled_date && (<View className='infoListing'>{apmtInfo.scheduled_date}</View>)}
-                        { apmtInfo.type && (<View className='infoListing'>{apmtInfo.type}</View>)}
-                        { apmtInfo.hotel && (<View className='infoListing'>{apmtInfo.hotel}</View>)}
-                        { apmtInfo.golf && (<View className='infoListing'>{apmtInfo.golf}</View>)}
-                        { apmtInfo.horse && (<View className='infoListing'>{apmtInfo.horse}</View>)}
-                        { apmtInfo.studio_name && (<View className='infoListing'>{apmtInfo.studio_name}</View>)}
-                        { apmtInfo.manager_name && (<View className='infoListing'>{apmtInfo.manager_name}</View>)}
-                        { apmtInfo.plate && (<View className='infoListing'>{apmtInfo.plate}</View>)}
-                    </View>
-*/
-
-
-/*
-                extra={apmtInfo.checked_in
-                    && ( apmtInfo.canCheckIn && (<AtButton disabled={!(apmtInfo.scheduled_date == today)} onClick={() => handleCheckOut(apmtInfo)} size='small' circle>取消签到</AtButton>))
-                    || ( apmtInfo.canCheckOut && (<AtButton disabled={!(apmtInfo.scheduled_date == today)} onClick={() => handleCheckIn(apmtInfo)} size='small' circle type='primary'>签到</AtButton>))
-                }
-*/

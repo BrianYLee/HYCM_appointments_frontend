@@ -180,19 +180,3 @@ const ApplicationsPage = () => {
 }
 
 export default ApplicationsPage;
-
-/*
-                <AtTabsPane current={currentTab} index={2}>
-                    {applications.length > 0 ? (
-                        applications.map(( app ) => (
-                            <ApplictionCard appInfo={app} />
-                        ))
-                    ) : (
-                    <View className='no-records'>
-                        <Image className="logo" src={require('../../images/icons/out-of-stock.png')} />
-                        <Text className="title">就没人申请过。。。</Text>
-                    </View>
-                    )}
-                    {applications.length > 0 && (<AtDivider content='没有更多啦' fontColor='#ccc' lineColor='#ddd' fontSize='24'/>)}
-                </AtTabsPane>
-*/
