@@ -96,8 +96,10 @@ export const AuthProvider = ({ children }) => {
             Taro.showToast({
                 title: 'renew failed',
                 icon: 'fail',
+                mask: true,
                 duration: 2000
             });
+            logout();
         } finally {
             setAuthLoading(false);
         }
