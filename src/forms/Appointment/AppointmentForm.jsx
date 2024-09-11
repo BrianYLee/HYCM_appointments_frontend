@@ -166,6 +166,7 @@ const AppointmentForm = () => {
                 [field]: (dataBeforeEdit[field] != value)
             }));
         }
+        return value;
     };
 
     const resetForm = () => {
