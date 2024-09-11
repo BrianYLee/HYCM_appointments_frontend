@@ -23,7 +23,8 @@
       "outputPath": ""
     },
     "minifyWXSS": true,
-    "ignoreUploadUnusedFiles": false
+    "ignoreUploadUnusedFiles": true,
+    "minifyWXML": true
   },
   "compileType": "miniprogram",
   "simulatorType": "wechat",

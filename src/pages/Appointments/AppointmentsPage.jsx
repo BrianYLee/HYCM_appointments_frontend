@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Taro from '@tarojs/taro';
+import moment from 'moment';
 import NotSignedIn from '../../components/NotSignedIn';
 import NotEmployee from '../../components/NotEmployee';
 import Modal from '../../components/Modal';
@@ -28,14 +29,7 @@ const AppointmentsPage = () => {
         return (<NotEmployee/>);
     }
 
-    const dateOpt = {
-        timeZone: 'Asia/Shanghai',
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit'
-    }
-
-    const defaultDate = new Date().toLocaleDateString('en-CA', dateOpt);
+    const defaultDate = moment().format('YYYY-MM-DD');
 
     const { showLoader, hideLoader } = useLoader();
     const [ currentDate, setDate ] = useState(defaultDate);
@@ -66,7 +60,7 @@ const AppointmentsPage = () => {
 
     const refresh = () => {
         if (isAuthenticated && isEmployee && userData?.openid) {
-            setToday(new Date().toLocaleDateString('en-CA', dateOpt));
+            setToday(moment().format('YYYY-MM-DD'));
             fetchAndSetAppointments();
         }
     }
