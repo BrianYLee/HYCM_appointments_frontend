@@ -61,7 +61,7 @@ const determineKey = (key) => {
     if (key.includes('机构')) return 'studio_name';
     if (key == '摄影师' || key == '老师' || key == '拍摄老师' ) return 'manager_name';
     if (key == '客人' || key == '客人姓名' || key == '新人' || key == '新人名' || key == '新人姓名') return 'bridal_name';
-    if (key == '车牌' || key == '车牌号') return 'plates';
+    if (key == '车牌' || key == '车牌号') return 'vehicles';
     return null;
 }
 
@@ -99,8 +99,8 @@ const parseLine = (key, value) => {
     if (parsedKey == 'bridal_name') {
         return { bridal_name: value }
     }
-    if (parsedKey == 'plates') {
-        return { plates: value.split(/[,，、\s]+/).filter(Boolean) }
+    if (parsedKey == 'vehicles') {
+        return { vehicles: value.split(/[,，、\s]+/).filter(Boolean) }
     }
 }
 
@@ -134,7 +134,7 @@ const isValidDate = (dateToCheck) => {
 
 export const validateForm = (formData) => {
     const typeOpts = ['样片', '客片'];
-    let errors = { scheduled_date: false, type: false, has_jockey: false, studio_name: false, manager_name: false, plates: new Array(formData.plates.length).fill(false) };
+    let errors = { scheduled_date: false, type: false, has_jockey: false, studio_name: false, manager_name: false, vehicles: new Array(formData.vehicles.length).fill(false) };
     let hasError = false;
     if (!formData.scheduled_date || !isValidDate(formData.scheduled_date)) {
         errors.scheduled_date = true;
@@ -156,12 +156,12 @@ export const validateForm = (formData) => {
         errors.manager_name = true;
         hasError = true;
     }
-    formData.plates.map((plate, idx) => {
-        console.log('checking plate ' + plate + ' index ' + idx);
-        if (plate == undefined || plate == null || plate == '' || plate.length < 7) {
-            if (plate != '待定') {
+    formData.vehicles.map((v, idx) => {
+        console.log('checking plate ' + v.plate + ' index ' + idx);
+        if (v.plate == undefined || v.plate == null || v.plate == '' || v.plate.length < 7) {
+            if (v.plate != '待定') {
                 console.log('bad plate');
-                errors.plates[idx] = true;
+                errors.vehicles[idx] = true;
                 hasError = true;
             }
         }

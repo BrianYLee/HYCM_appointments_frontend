@@ -40,7 +40,7 @@ const AppointmentForm = () => {
         studio_name: '',
         manager_name: '',
         bridal_name: '',
-        plates: [null]
+        vehicles: [null]
     });
     const [ formErrors, setFormError ] = useState({
         type: false,
@@ -51,7 +51,7 @@ const AppointmentForm = () => {
         studio_name: false,
         manager_name: false,
         bridal_name: false,
-        plates: new Array(formData.plates.length).fill(false)
+        vehicles: new Array(formData.vehicles.length).fill(false)
     });
 
     // edit only states
@@ -71,7 +71,7 @@ const AppointmentForm = () => {
         studio_name: false,
         manager_name: false,
         bridal_name: false,
-        plates: new Array(formData.plates.length).fill(false)
+        vehicles: new Array(formData.vehicles.length).fill(false)
     });
 
     useEffect(() => {
@@ -125,8 +125,9 @@ const AppointmentForm = () => {
                     studio_name: data.studio_name,
                     manager_name: data.manager_name,
                     bridal_name: data.bridal_name,
-                    plates: data.plates
+                    vehicles: data.vehicles
                 });
+                setFormChanges(prev => ({...prev, vehicles: new Array(data.vehicles.length).fill(false)}));
                 hideLoader();
             }
             else {
@@ -168,33 +169,63 @@ const AppointmentForm = () => {
                 [field]: (dataBeforeEdit[field] != value)
             }));
         }
+        return value;
     };
 
     const handlePlateInput = (value, idx) => {
         setFormData(prev => ({
             ...prev,
-            plates: prev.plates.map((plate, i) => (i === idx ? value : plate))
+            vehicles: prev.vehicles.map((vehicle, i) => (i === idx ? {...vehicle, plate: value, isEdited: (editMode && !formData.vehicles[idx]?.isNew) ? true : undefined} : vehicle))
         }));
         if (editMode) {
             setFormChanges(prev => ({
                 ...prev,
-                plates: prev.plates.map((plate, i) => { if (i == idx && dataBeforeEdit.plates[idx] != plate) return true;})
+                vehicles: prev.vehicles.map((v, i) => (i == idx && dataBeforeEdit?.vehicles[idx]?.plate != v) ? true : v)
             }));
         }
+        return value;
     };
 
     const addPlate = () => {
         setFormData(prev => ({
             ...prev,
-            plates: [ ...prev.plates, null]
+            vehicles: [ ...prev.vehicles, {plate: '', isNew: true}]
         }));
+        if (editMode) {
+            setFormChanges(prev => ({
+                ...prev,
+                vehicles: [...prev.vehicles, true]
+            }));
+        }
     }
 
     const deletePlate = (idx) => {
-        setFormData(prev => ({
-            ...prev,
-            plates: prev.plates.filter((_, i) => i !== idx)
-        }));
+        if (formData.vehicles[idx]?.isNew) {
+            setFormData(prev => ({
+                ...prev,
+                vehicles: prev.vehicles.filter((_, i) => i !== idx)
+            }));
+        }
+        else {
+            setFormData(prev => ({
+                ...prev,
+                vehicles: prev.vehicles.map((vehicle, i) => (i === idx ? {...vehicle, isDeleted: true} : vehicle))
+            }));
+        }
+        if (editMode) {
+            if (formData.vehicles[idx]?.isNew) {
+                setFormChanges(prev => ({
+                    ...prev,
+                    vehicles: prev.vehicles.filter((_, i) => i !== idx)
+                }));
+            }
+            else {
+                setFormChanges(prev => ({
+                    ...prev,
+                    vehicles: prev.vehicles.map((vehicle, i) => (i === idx ? true : vehicle))
+                }));
+            }
+        }
     }
 
     const resetForm = () => {
@@ -211,7 +242,7 @@ const AppointmentForm = () => {
             studio_name: false,
             manager_name: false,
             bridal_name: false,
-            plates: new Array(dataBeforeEdit.plates.length).fill(false)
+            vehicles: new Array(dataBeforeEdit.vehicles.length).fill(false)
         });
     };
 
@@ -303,7 +334,17 @@ const AppointmentForm = () => {
             toggleEditSubmitModal(false);
             let hasChanges = false;
             for (let key in formChanges) {
-                if (formChanges[key] == true) {
+                if (key == 'vehicles') {
+                    formChanges.vehicles.forEach(v => {
+                        if (v == true) {
+                            hasChanges = true;
+                            return
+                        }
+                    });
+                    if (hasChanges) break;
+                }
+                else if (formChanges[key] == true) {
+                    console.log('found change in key ' + key);
                     hasChanges = true;
                     break;
                 }
@@ -416,8 +457,8 @@ const AppointmentForm = () => {
                     {className: '.at-article__h2', text: `拍马：${horseInputVal}`},
                     {className: '.at-article__h2', text: `机构：${formData.studio_name}`},
                     {className: '.at-article__h2', text: `老师：${formData.manager_name}`},
-                    ...(formData.plates.map((plate, idx) => {
-                        return {className: '.at-article__h2', text: `车牌${idx+1}：${plate}`}
+                    ...(formData.vehicles.map((v, idx) => {
+                        return {className: '.at-article__h2', text: `车牌${idx+1}：${v.plate}`}
                     }))
                 ]}
                 cancelText='取消' confirmText='提交' onClose={() => toggleSubmitModal(false)} onCancel={() => toggleSubmitModal(false)} onConfirm={onConfirm} />
@@ -434,8 +475,8 @@ const AppointmentForm = () => {
                     {className: '.at-article__h2 ' + (formChanges.studio_name && 'has-changes'), text: `机构：${formData.studio_name}`},
                     {className: '.at-article__h2 ' + (formChanges.manager_name && 'has-changes'), text: `老师：${formData.manager_name}`},
                     {className: '.at-article__h2 ' + (formChanges.bridal_name && 'has-changes'), text: `新人：${formData.bridal_name}`},
-                    ...(formChanges.plates.map((plateHasChange, idx) => {
-                        return {className: '.at-article__h2 ' + (plateHasChange && 'has-changes'), text: `车牌${idx+1}：${formData.plates[idx]}`}
+                    ...(formChanges.vehicles.map((plateHasChange, idx) => {
+                        return {className: '.at-article__h2 ' + (plateHasChange && 'has-changes ') + (formData.vehicles[idx].isDeleted && 'is-deleted'), text: `车牌${idx+1}：${formData.vehicles[idx].plate}`}
                     }))
                 ]}
                 cancelText='取消' confirmText='提交' onClose={() => toggleEditSubmitModal(false)} onCancel={() => toggleEditSubmitModal(false)} onConfirm={onConfirm} />
@@ -538,15 +579,15 @@ const AppointmentForm = () => {
                         className='text-input'
                         onChange={(value) => handleInput(value, 'bridal_name')}
                     />
-                    {formData.plates.map((plate, idx) => (
-                        <View className='plate-row at-row'>
+                    {formData.vehicles.map((v, idx) => (
+                        <View className={'plate-row at-row ' + (v.isDeleted && 'vehicle-hidden')}>
                             <AtInput
-                                error={formErrors.plates[idx]}
-                                name='plates'
-                                title='车牌号'
+                                error={formErrors.vehicles[idx]}
+                                name='vehicles'
+                                title={`车牌号${idx+1}`}
                                 type='text'
                                 placeholder='没确认填写 “待定”'
-                                value={plate}
+                                value={v.plate}
                                 adjustPosition
                                 onChange={(value) => handlePlateInput(value, idx)}
                                 className='text-input plate-input at-col at-col-8'
