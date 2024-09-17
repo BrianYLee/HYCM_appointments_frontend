@@ -7,7 +7,7 @@ import Modal from '../../components/Modal/Modal';
 import Loader from '../../components/Loader';
 import AppointmentsService from '../../services/Appointments/AppointmentsService';
 import { REFRESH_APMTS } from '../../constants/events';
-import { parseAppointment } from '../../utils/appointment';
+import { parseAppointment, validateForm } from '../../utils/appointment';
 
 import { useAuth } from '../../context/AuthContext';
 import { useLoader } from '../../context/LoaderContext';
@@ -26,29 +26,32 @@ const AppointmentForm = () => {
     const [ horseSelect, toggleHorseSelect ] = useState(false);
     const [ showSubmitModal, toggleSubmitModal ] = useState(false);
     const [ horseInputVal, setHorseInputValue ] = useState('');
-    const [ formErrors, setFormError ] = useState({
-        scheduled_date: false,
-        type: false,
-        horse: false,
-        studio_name: false,
-        manager_name: false,
-        plate: false
-    });
 
     const [ formData, setFormData ] = useState({
         id: null,
-        checked_in: false,
+        hotel_checked_in: false,
+        golf_checked_in: false,
+        jockey_checked_in: false,
+        type: '',
         scheduled_date: '',
         scheduled_time_string: '',
-        type: '',
         areas: '',
-        hotel: true,
-        golf: true,
-        horse: null,
+        has_jockey: false,
         studio_name: '',
         manager_name: '',
         bridal_name: '',
-        plate: ''
+        plates: [null]
+    });
+    const [ formErrors, setFormError ] = useState({
+        type: false,
+        scheduled_date: false,
+        scheduled_time_string: false,
+        areas: false,
+        has_jockey: false,
+        studio_name: false,
+        manager_name: false,
+        bridal_name: false,
+        plates: new Array(formData.plates.length).fill(false)
     });
 
     // edit only states
@@ -57,31 +60,30 @@ const AppointmentForm = () => {
     const [ showDeleteModal, toggleDeleteModal ] = useState(false);
     const [ dataBeforeEdit, setApmtData ] = useState({});
     const [ formChanges, setFormChanges ] = useState({
-        checked_in: false,
+        hotel_checked_in: false,
+        golf_checked_in: false,
+        jockey_checked_in: false,
+        type: false,
         scheduled_date: false,
         scheduled_time_string: false,
         areas: false,
-        type: false,
-        horse: false,
+        has_jockey: false,
         studio_name: false,
         manager_name: false,
         bridal_name: false,
-        plate: false
+        plates: new Array(formData.plates.length).fill(false)
     });
 
-    const typeOpts = ['样片', '客片'];
+    useEffect(() => {
+        formData.has_jockey
+            ? setHorseInputValue('拍')
+            : setHorseInputValue('不拍');
+    }, [formData.has_jockey]);
 
     useEffect(() => {
-        if (formData.horse == true) {
-            setHorseInputValue('拍');
-        } else if (formData.horse == false) {
-            setHorseInputValue('不拍');
-        }
-    }, [formData.horse]);
-
-    useEffect(() => {
-        if (initLoading) showLoader();
-        else if (!initLoading) hideLoader();
+        initLoading 
+            ? showLoader()
+            : hideLoader()
     }, [initLoading]);
 
     useEffect(() => {
@@ -112,18 +114,18 @@ const AppointmentForm = () => {
                 setSelectedDate(data.scheduled_date);
                 setFormData({
                     id: data.id,
-                    checked_in: data.checked_in,
+                    hotel_checked_in: data.hotel_checked_in,
+                    golf_checked_in: data.golf_checked_in,
+                    jockey_checked_in: data.jockey_checked_in,
+                    type: data.type,
                     scheduled_date: data.scheduled_date,
                     scheduled_time_string: data.scheduled_time_string,
-                    type: data.type,
                     areas: data.areas,
-                    hotel: data.hotel,
-                    golf: data.golf,
-                    horse: data.horse,
+                    has_jockey: data.has_jockey,
                     studio_name: data.studio_name,
                     manager_name: data.manager_name,
                     bridal_name: data.bridal_name,
-                    plate: data.plate
+                    plates: data.plates
                 });
                 hideLoader();
             }
@@ -168,21 +170,50 @@ const AppointmentForm = () => {
         }
     };
 
+    const handlePlateInput = (value, idx) => {
+        setFormData(prev => ({
+            ...prev,
+            plates: prev.plates.map((plate, i) => (i === idx ? value : plate))
+        }));
+        if (editMode) {
+            setFormChanges(prev => ({
+                ...prev,
+                plates: prev.plates.map((plate, i) => { if (i == idx && dataBeforeEdit.plates[idx] != plate) return true;})
+            }));
+        }
+    };
+
+    const addPlate = () => {
+        setFormData(prev => ({
+            ...prev,
+            plates: [ ...prev.plates, null]
+        }));
+    }
+
+    const deletePlate = (idx) => {
+        setFormData(prev => ({
+            ...prev,
+            plates: prev.plates.filter((_, i) => i !== idx)
+        }));
+    }
+
     const resetForm = () => {
         setFormData({ ...dataBeforeEdit });
         setFormChanges({
-            checked_in: false,
+            hotel_checked_in: false,
+            golf_checked_in: false,
+            jockey_checked_in: false,
+            type: false,
             scheduled_date: false,
             scheduled_time_string: false,
             areas: false,
-            type: false,
-            horse: false,
+            has_jockey: false,
             studio_name: false,
             manager_name: false,
             bridal_name: false,
-            plate: false
+            plates: new Array(dataBeforeEdit.plates.length).fill(false)
         });
-    }
+    };
 
     const parseClipBoard = () => {
         Taro.getClipboardData({
@@ -190,23 +221,11 @@ const AppointmentForm = () => {
                 const parsedData = parseAppointment(res.data);
                 if (parsedData != null) {
                     setSelectedDate(parsedData.scheduled_date);
-                    setFormData({
-                        scheduled_date: parsedData.scheduled_date,
-                        scheduled_time_string: parsedData.scheduled_time_string,
-                        type: parsedData.type,
-                        areas: parsedData.areas,
-                        hotel: true,
-                        golf: true,
-                        horse: parsedData.horse,
-                        studio_name: parsedData.studio_name,
-                        manager_name: parsedData.manager_name,
-                        bridal_name: parsedData.bridal_name,
-                        plate: parsedData.plate
-                    });
+                    setFormData({ ...parsedData });
                 }
             }
-        })
-    }
+        });
+    };
 
     const handleDateSelect = (dateObj) => {
         setSelectedDate(dateObj.value.end);
@@ -225,47 +244,19 @@ const AppointmentForm = () => {
     };
     
     const hasFormErrors = () => {
-        const isValidDate = (dateToCheck) => {
-            const regex = /^\d{4}-\d{2}-\d{2}$/;
-            if (!regex.test(dateToCheck)) {
-                return false;
-            }
-            const parts = dateToCheck.split("-");
-            const year = parseInt(parts[0], 10);
-            const month = parseInt(parts[1], 10);
-            const day = parseInt(parts[2], 10);
-            const date = new Date(year, month - 1, day);
-            return date && (date.getMonth() + 1) === month && date.getDate() === day && date.getFullYear() === year;
-        }
-        let errors = { scheduled_date: false, type: false, horse: false, studio_name: false, manager_name: false, plate: false };
-        if (!formData.scheduled_date || !isValidDate(formData.scheduled_date)) {
-            errors.scheduled_date = true;
-        }
-        if (!typeOpts.includes(formData.type)) {
-            errors.type = true;
-        }
-        if (formData.horse === null ) {
-            errors.horse = true;
-        }
-        if (!formData.studio_name || formData.studio_name.length < 2) {
-            errors.studio_name = true;
-        }
-        if (!formData.manager_name || formData.manager_name.length < 2) {
-            errors.manager_name = true;
-        }
-        if (!formData.plate || formData.plate.length < 2) {
-            errors.plate = true;
-        }
-        setFormError(errors);
-        return (errors.scheduled_date || errors.type || errors.horse || errors.studio_name || errors.manager_name || errors.plate );
+        const errObj = validateForm(formData);
+        setFormError(prev => ({ ...errObj.errors }));
+        return errObj.hasError;
     };
 
     const onSubmit = () => {
+        console.log(formData);
         if (hasFormErrors()) {
             Taro.atMessage({
                 message: '输入错误',
                 type: 'error'
             });
+            console.log(formErrors);
             return;
         }
         if (editMode) {
@@ -425,18 +416,27 @@ const AppointmentForm = () => {
                     {className: '.at-article__h2', text: `拍马：${horseInputVal}`},
                     {className: '.at-article__h2', text: `机构：${formData.studio_name}`},
                     {className: '.at-article__h2', text: `老师：${formData.manager_name}`},
-                    {className: '.at-article__h2', text: `车牌：${formData.plate}`}
+                    ...(formData.plates.map((plate, idx) => {
+                        return {className: '.at-article__h2', text: `车牌${idx+1}：${plate}`}
+                    }))
                 ]}
                 cancelText='取消' confirmText='提交' onClose={() => toggleSubmitModal(false)} onCancel={() => toggleSubmitModal(false)} onConfirm={onConfirm} />
             <Modal isOpened={showEditSubmitModal} closeOnClickOverlay={true} title='改的对不对？' 
                 contents={[
-                    {className: '.at-article__h2 ' + (formChanges.checked_in && 'has-changes'), text: `签到：${formData.checked_in ? '已签到' : '未签到'}`},
+                    {className: '.at-article__h2 ' + (formChanges.hotel_checked_in && 'has-changes'), text: `酒店签到：${formData.hotel_checked_in ? '已签到' : '未签到'}`},
+                    {className: '.at-article__h2 ' + (formChanges.golf_checked_in && 'has-changes'), text: `球会签到：${formData.golf_checked_in ? '已签到' : '未签到'}`},
+                    {className: '.at-article__h2 ' + (formChanges.jockey_checked_in && 'has-changes'), text: `马会签到：${formData.jockey_checked_in ? '已签到' : '未签到'}`},
                     {className: '.at-article__h2 ' + (formChanges.scheduled_date && 'has-changes'), text: `日期：${formData.scheduled_date}`},
+                    {className: '.at-article__h2 ' + (formChanges.scheduled_time_string && 'has-changes'), text: `时间：${formData.scheduled_time_string}`},
+                    {className: '.at-article__h2 ' + (formChanges.areas && 'has-changes'), text: `区域：${formData.areas}`},
                     {className: '.at-article__h2 ' + (formChanges.type && 'has-changes'), text: `类型：${formData.type}`},
-                    {className: '.at-article__h2 ' + (formChanges.horse && 'has-changes'), text: `拍马：${horseInputVal}`},
+                    {className: '.at-article__h2 ' + (formChanges.has_jockey && 'has-changes'), text: `拍马：${horseInputVal}`},
                     {className: '.at-article__h2 ' + (formChanges.studio_name && 'has-changes'), text: `机构：${formData.studio_name}`},
                     {className: '.at-article__h2 ' + (formChanges.manager_name && 'has-changes'), text: `老师：${formData.manager_name}`},
-                    {className: '.at-article__h2 ' + (formChanges.plate && 'has-changes'), text: `车牌：${formData.plate}`}
+                    {className: '.at-article__h2 ' + (formChanges.bridal_name && 'has-changes'), text: `新人：${formData.bridal_name}`},
+                    ...(formChanges.plates.map((plateHasChange, idx) => {
+                        return {className: '.at-article__h2 ' + (plateHasChange && 'has-changes'), text: `车牌${idx+1}：${formData.plates[idx]}`}
+                    }))
                 ]}
                 cancelText='取消' confirmText='提交' onClose={() => toggleEditSubmitModal(false)} onCancel={() => toggleEditSubmitModal(false)} onConfirm={onConfirm} />
             <Modal isOpened={showDeleteModal} closeOnClickOverlay={true} title='确定把预约取消了？' 
@@ -446,9 +446,11 @@ const AppointmentForm = () => {
                 ]}
                 cancelText='再想想' confirmText='取消预约' onClose={() => toggleDeleteModal(false)} onCancel={() => toggleDeleteModal(false)} onConfirm={onDeleteConfirm} />
             <DocsHeader className='header' title={editMode ? '预约修改' : '新增拍摄预约'} desc='别填错了'/>
-            { !editMode && (<AtButton className='parse-btn' circle type='primary' onClick={parseClipBoard}>粘贴识别</AtButton>)}
+            { !editMode && (<AtButton className='parse-btn' size='small' type='primary' onClick={parseClipBoard}>粘贴识别</AtButton>)}
             <View className='form-container'>
-                    { editMode && (<AtSwitch title='签到' checked={formData.checked_in} onChange={(value) => handleInput(value, 'checked_in')} />)}
+                    { editMode && (<AtSwitch title='酒店签到' checked={formData.hotel_checked_in} onChange={(value) => handleInput(value, 'hotel_checked_in')} />)}
+                    { editMode && (<AtSwitch title='高尔夫签到' checked={formData.golf_checked_in} onChange={(value) => handleInput(value, 'golf_checked_in')} />)}
+                    { editMode && (<AtSwitch title='签到' checked={formData.jockey_checked_in} onChange={(value) => handleInput(value, 'jockey_checked_in')} />)}
                     <AtInput
                         error={formErrors.type}
                         name='type'
@@ -495,8 +497,8 @@ const AppointmentForm = () => {
                         onChange={(value) => handleInput(value, 'areas')}
                     />
                     <AtInput
-                        error={formErrors.horse}
-                        name='horse'
+                        error={formErrors.has_jockey}
+                        name='has_jockey'
                         title='拍马吗？'
                         type='text'
                         placeholder='请选择'
@@ -536,17 +538,23 @@ const AppointmentForm = () => {
                         className='text-input'
                         onChange={(value) => handleInput(value, 'bridal_name')}
                     />
-                    <AtInput
-                        error={formErrors.plate}
-                        name='plate'
-                        title='车牌号'
-                        type='text'
-                        placeholder='确认不了请填写 “待定”'
-                        value={formData.plate}
-                        adjustPosition
-                        onChange={(value) => handleInput(value, 'plate')}
-                        className='text-input'
-                    />
+                    {formData.plates.map((plate, idx) => (
+                        <View className='plate-row at-row'>
+                            <AtInput
+                                error={formErrors.plates[idx]}
+                                name='plates'
+                                title='车牌号'
+                                type='text'
+                                placeholder='没确认填写 “待定”'
+                                value={plate}
+                                adjustPosition
+                                onChange={(value) => handlePlateInput(value, idx)}
+                                className='text-input plate-input at-col at-col-8'
+                            />
+                            {idx === 0 && <AtButton circle={true} size='small' className='plate-delete-btn at-col at-col-1 at-col--auto' type='primary' onClick={addPlate}>+</AtButton>}
+                            {idx != 0 && <AtButton circle={true} size='small' className='plate-delete-btn at-col at-col-1 at-col--auto' type='secondary' onClick={() => deletePlate(idx)}>-</AtButton>}
+                        </View>
+                    ))}
                     <AtFloatLayout isOpened={showCalendar} onClose={() => toggleCalendar(false)} cancelText='Cancel'>
                         <AtCalendar currentDate={formData.scheduled_date} format='YYYY-MM-DD' onSelectDate={e => (handleDateSelect(e))} isMultiSelect={false}/>
                         <AtButton type='primary' circle onClick={onDateConfirm.bind(this, 'error')}>Confirm</AtButton>
@@ -556,8 +564,8 @@ const AppointmentForm = () => {
                         <AtActionSheetItem onClick={() => {handleInput("样片", 'type'); toggleTypeSelect(false);}}>样片</AtActionSheetItem>
                     </AtActionSheet>
                     <AtActionSheet isOpened={horseSelect} title='马拍不拍？'>
-                        <AtActionSheetItem onClick={() => {handleInput(true, 'horse'); toggleHorseSelect(false);}}>拍</AtActionSheetItem>
-                        <AtActionSheetItem onClick={() => {handleInput(false, 'horse'); toggleHorseSelect(false);}}>不拍</AtActionSheetItem>
+                        <AtActionSheetItem onClick={() => {handleInput(true, 'has_jockey'); toggleHorseSelect(false);}}>拍</AtActionSheetItem>
+                        <AtActionSheetItem onClick={() => {handleInput(false, 'has_jockey'); toggleHorseSelect(false);}}>不拍</AtActionSheetItem>
                     </AtActionSheet>
             </View>
             { editMode && (<AtButton circle className='submit-btn' type='secondary' onClick={resetForm}>复原</AtButton>) }

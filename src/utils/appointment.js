@@ -61,7 +61,7 @@ const determineKey = (key) => {
     if (key.includes('机构')) return 'studio_name';
     if (key == '摄影师' || key == '老师' || key == '拍摄老师' ) return 'manager_name';
     if (key == '客人' || key == '客人姓名' || key == '新人' || key == '新人名' || key == '新人姓名') return 'bridal_name';
-    if (key == '车牌' || key == '车牌号') return 'plate';
+    if (key == '车牌' || key == '车牌号') return 'plates';
     return null;
 }
 
@@ -88,7 +88,7 @@ const parseLine = (key, value) => {
     }
     if (parsedKey == 'areas') {
         let hasHorse = value.includes('马');
-        return { areas: value, horse: hasHorse};
+        return { areas: value, has_jockey: hasHorse};
     }
     if (parsedKey == 'studio_name') {
         return { studio_name: value };
@@ -99,8 +99,8 @@ const parseLine = (key, value) => {
     if (parsedKey == 'bridal_name') {
         return { bridal_name: value }
     }
-    if (parsedKey == 'plate') {
-        return { plate: value }
+    if (parsedKey == 'plates') {
+        return { plates: value.split(/[,，、\s]+/).filter(Boolean) }
     }
 }
 
@@ -117,4 +117,57 @@ export const parseAppointment = (input) => {
         }
     });
     return output;
+}
+
+const isValidDate = (dateToCheck) => {
+    const regex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!regex.test(dateToCheck)) {
+        return false;
+    }
+    const parts = dateToCheck.split("-");
+    const year = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10);
+    const day = parseInt(parts[2], 10);
+    const date = new Date(year, month - 1, day);
+    return date && (date.getMonth() + 1) === month && date.getDate() === day && date.getFullYear() === year;
+}
+
+export const validateForm = (formData) => {
+    const typeOpts = ['样片', '客片'];
+    let errors = { scheduled_date: false, type: false, has_jockey: false, studio_name: false, manager_name: false, plates: new Array(formData.plates.length).fill(false) };
+    let hasError = false;
+    if (!formData.scheduled_date || !isValidDate(formData.scheduled_date)) {
+        errors.scheduled_date = true;
+        hasError = true;
+    }
+    if (!typeOpts.includes(formData.type)) {
+        errors.type = true;
+        hasError = true;
+    }
+    if (formData.has_jockey === null ) {
+        errors.has_jockey = true;
+        hasError = true;
+    }
+    if (!formData.studio_name || formData.studio_name.length < 2) {
+        errors.studio_name = true;
+        hasError = true;
+    }
+    if (!formData.manager_name || formData.manager_name.length < 2) {
+        errors.manager_name = true;
+        hasError = true;
+    }
+    formData.plates.map((plate, idx) => {
+        console.log('checking plate ' + plate + ' index ' + idx);
+        if (plate == undefined || plate == null || plate == '' || plate.length < 7) {
+            if (plate != '待定') {
+                console.log('bad plate');
+                errors.plates[idx] = true;
+                hasError = true;
+            }
+        }
+    });
+    return { 
+        hasError,
+        errors
+    };
 }
