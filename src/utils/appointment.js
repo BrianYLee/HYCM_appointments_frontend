@@ -157,9 +157,9 @@ export const validateForm = (formData) => {
         hasError = true;
     }
     formData.vehicles.map((v, idx) => {
-        console.log('checking plate ' + v.plate + ' index ' + idx);
-        if (v.plate == undefined || v.plate == null || v.plate == '' || v.plate.length < 7) {
-            if (v.plate != '待定') {
+        console.log('checking plate ' + v?.plate + ' index ' + idx);
+        if (!v?.isDeleted && (v?.plate == undefined || v?.plate == null || v?.plate == '' || v?.plate.length < 7)) {
+            if (v?.plate != '待定') {
                 console.log('bad plate');
                 errors.vehicles[idx] = true;
                 hasError = true;

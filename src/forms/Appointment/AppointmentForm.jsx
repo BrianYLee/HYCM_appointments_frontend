@@ -458,7 +458,7 @@ const AppointmentForm = () => {
                     {className: '.at-article__h2', text: `机构：${formData.studio_name}`},
                     {className: '.at-article__h2', text: `老师：${formData.manager_name}`},
                     ...(formData.vehicles.map((v, idx) => {
-                        return {className: '.at-article__h2', text: `车牌${idx+1}：${v.plate}`}
+                        return {className: '.at-article__h2', text: `车牌${idx+1}：${v?.plate}`}
                     }))
                 ]}
                 cancelText='取消' confirmText='提交' onClose={() => toggleSubmitModal(false)} onCancel={() => toggleSubmitModal(false)} onConfirm={onConfirm} />
@@ -476,7 +476,7 @@ const AppointmentForm = () => {
                     {className: '.at-article__h2 ' + (formChanges.manager_name && 'has-changes'), text: `老师：${formData.manager_name}`},
                     {className: '.at-article__h2 ' + (formChanges.bridal_name && 'has-changes'), text: `新人：${formData.bridal_name}`},
                     ...(formChanges.vehicles.map((plateHasChange, idx) => {
-                        return {className: '.at-article__h2 ' + (plateHasChange && 'has-changes ') + (formData.vehicles[idx].isDeleted && 'is-deleted'), text: `车牌${idx+1}：${formData.vehicles[idx].plate}`}
+                        return {className: '.at-article__h2 ' + (plateHasChange && 'has-changes ') + (formData.vehicles[idx]?.isDeleted && 'is-deleted'), text: `车牌${idx+1}：${formData.vehicles[idx]?.plate}`}
                     }))
                 ]}
                 cancelText='取消' confirmText='提交' onClose={() => toggleEditSubmitModal(false)} onCancel={() => toggleEditSubmitModal(false)} onConfirm={onConfirm} />
@@ -580,14 +580,14 @@ const AppointmentForm = () => {
                         onChange={(value) => handleInput(value, 'bridal_name')}
                     />
                     {formData.vehicles.map((v, idx) => (
-                        <View className={'plate-row at-row ' + (v.isDeleted && 'vehicle-hidden')}>
+                        <View className={'plate-row at-row ' + (v?.isDeleted && 'vehicle-hidden')}>
                             <AtInput
                                 error={formErrors.vehicles[idx]}
                                 name='vehicles'
                                 title={`车牌号${idx+1}`}
                                 type='text'
                                 placeholder='没确认填写 “待定”'
-                                value={v.plate}
+                                value={v?.plate}
                                 adjustPosition
                                 onChange={(value) => handlePlateInput(value, idx)}
                                 className='text-input plate-input at-col at-col-8'
