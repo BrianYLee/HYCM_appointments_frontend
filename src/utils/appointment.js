@@ -171,3 +171,13 @@ export const validateForm = (formData) => {
         errors
     };
 }
+
+export const keyToString = (input) => {
+    if (input == 'areas') return '拍摄区域';
+    if (input == 'bridal_name') return '新人姓名';
+    if (input == 'created_date') return '添加日期';
+    if (input == 'manager_name') return '摄影师';
+    if (input == 'scheduled_time_string') return '拍摄时间';
+    if (input == 'studio_name') return '机构名称';
+    if (input == 'type') return '';
+}

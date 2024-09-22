@@ -1,6 +1,5 @@
 import React from 'react'
-
-// Components
+import AdminCard from './AdminCard'
 import { View } from '@tarojs/components'
 import { AtCard, AtButton} from 'taro-ui'
 
@@ -21,6 +20,17 @@ const ButtonGroup = ({ apmtInfo, today, handleCheckIn=null, handleCheckOut=null,
     )
 }
 
+const AppointmentCard = ( { note = undefined, apmtInfo, handleCheckIn, handleCheckOut, handleEdit=() => null, today } ) => {
+    return ( 
+        <View className='appointment-card'>
+            <AdminCard apmtInfo={apmtInfo} today={today} handleEdit={handleEdit} />
+        </View>
+    );
+};
+
+export default AppointmentCard;
+
+/*
 const AppointmentCard = ( { note = undefined, apmtInfo, handleCheckIn, handleCheckOut, handleEdit=() => null, today } ) => {
     return ( 
         <View className='appointment-card'>
@@ -60,5 +70,4 @@ const AppointmentCard = ( { note = undefined, apmtInfo, handleCheckIn, handleChe
         </View>
     );
 };
-
-export default AppointmentCard;
+*/
