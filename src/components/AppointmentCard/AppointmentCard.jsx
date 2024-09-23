@@ -1,29 +1,17 @@
 import React from 'react'
 import AdminCard from './AdminCard'
+import SecurityCard from './SecurityCard'
 import { View } from '@tarojs/components'
-import { AtCard, AtButton} from 'taro-ui'
+// import { AtCard, AtButton} from 'taro-ui'
 
 // styling
 import './AppointmentCard.scss'
 
-const ButtonGroup = ({ apmtInfo, today, handleCheckIn=null, handleCheckOut=null, handleEdit=() => null }) => {
-    return (
-        <View className='button-group at-row'>
-            {apmtInfo?.canEdit 
-                ? (<AtButton className='at-col at-col-1' onClick={() => handleEdit(apmtInfo.id)} size='small' circle >修改</AtButton>)
-                : ( apmtInfo.checked_in == true
-                    ? ( apmtInfo.canCheckOut == true && (<AtButton className='at-col at-col-1 at-col--auto' disabled={!(apmtInfo.scheduled_date == today)} onClick={() => handleCheckOut(apmtInfo)} size='small' circle>取消签到</AtButton>))
-                    : ( apmtInfo.canCheckIn == true && (<AtButton className='at-col at-col-1 at-col--auto' disabled={!(apmtInfo.scheduled_date == today)} onClick={() => handleCheckIn(apmtInfo)} size='small' circle type='primary'>签到</AtButton>))
-                )
-            }
-        </View>
-    )
-}
-
 const AppointmentCard = ( { note = undefined, apmtInfo, handleCheckIn, handleCheckOut, handleEdit=() => null, today } ) => {
-    return ( 
+    return (
         <View className='appointment-card'>
             <AdminCard apmtInfo={apmtInfo} today={today} handleEdit={handleEdit} />
+            <SecurityCard apmtInfo={apmtInfo} today={today} handleEdit={handleEdit} />
         </View>
     );
 };
