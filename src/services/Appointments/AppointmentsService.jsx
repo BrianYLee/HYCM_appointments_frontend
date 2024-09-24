@@ -1,5 +1,13 @@
 import Taro from '@tarojs/taro'
-import { APPOINTMENTS_URL, APPOINTMENT_CHECKIN_URL, APPOINTMENT_CHECKOUT_URL, APPOINTMENT_EDIT_URL, APPOINTMENT_DELETE_URL } from '../../constants/config';
+import {
+    APPOINTMENTS_URL,
+    APPOINTMENT_CHECKIN_URL,
+    APPOINTMENT_CHECKOUT_URL,
+    APPOINTMENT_VEHICLE_CHECKIN_URL,
+    APPOINTMENT_VEHICLE_CHECKOUT_URL,
+    APPOINTMENT_EDIT_URL,
+    APPOINTMENT_DELETE_URL
+} from '../../constants/config';
 
 const getAppointments = async (openid, dateToFetch) => {
     try {
@@ -85,6 +93,72 @@ const checkIn = async (openId, apmtId) => {
             icon: 'error'
         });
         return { success: false, message: 'AppointmentsService: checkIn: failed to post checkin' };
+    }
+};
+
+const v_CheckIn = async (openId, v_id) => {
+    try {
+        if (!openId) {
+            throw new Error('AppointmentsService: v_CheckIn: no openid found');
+        }
+        const response = await Taro.request({
+            url: APPOINTMENT_VEHICLE_CHECKIN_URL,
+            method: 'POST',
+            data: {
+                openid: openId,
+                v_id: v_id
+            },
+            header: {
+                'content-type': 'application/json'
+            }
+        });
+        if (response.statusCode === 200) {
+            // checkin posted
+            return { success: true };
+        } else {
+            console.log('wtf happened? ');
+            console.log(response);
+            throw new Error('AppointmentsService: v_CheckIn: failed to post vehicle checkin with ID ' + v_id);
+        }
+    } catch (error) {
+        Taro.showToast({
+            title: error.message,
+            icon: 'error'
+        });
+        return { success: false, message: 'AppointmentsService: v_CheckIn: failed to post vehicle checkin' };
+    }
+};
+
+const v_CheckOut = async (openId, v_id) => {
+    try {
+        if (!openId) {
+            throw new Error('AppointmentsService: checkOut: no openid found');
+        }
+        const response = await Taro.request({
+            url: APPOINTMENT_VEHICLE_CHECKOUT_URL,
+            method: 'POST',
+            data: {
+                openid: openId,
+                v_id: v_id
+            },
+            header: {
+                'content-type': 'application/json'
+            }
+        });
+        if (response.statusCode === 200) {
+            // check-out posted
+            return { success: true };
+        } else {
+            console.log('wtf happened? ');
+            console.log(response);
+            throw new Error('AppointmentsService: v_CheckOut: failed to post checkout with ID ' + v_id);
+        }
+    } catch (error) {
+        Taro.showToast({
+            title: error.message,
+            icon: 'none'
+        });
+        return { success: false, message: 'AppointmentsService: v_CheckOut: failed to post vehicle checkout' };
     }
 };
 
@@ -203,6 +277,8 @@ export default {
     postAppointment,
     checkIn,
     checkOut,
+    v_CheckIn,
+    v_CheckOut,
     getAppointment,
     editAppointment,
     deleteAppointment
