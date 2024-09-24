@@ -63,17 +63,18 @@ const postAppointment = async (openId, apmtObj) => {
     }
 };
 
-const checkIn = async (openId, apmtId) => {
+const checkIn = async (openId, id, area) => {
     try {
-        if (!openId) {
-            throw new Error('AppointmentsService: checkIn: no openid found');
+        if (!openId || !id || !area) {
+            throw new Error('AppointmentsService: checkIn: missing parameter');
         }
         const response = await Taro.request({
             url: APPOINTMENT_CHECKIN_URL,
             method: 'POST',
             data: {
-                openId: openId,
-                apmtId: apmtId
+                openid: openId,
+                id: id,
+                area: area
             },
             header: {
                 'content-type': 'application/json'
@@ -85,7 +86,7 @@ const checkIn = async (openId, apmtId) => {
         } else {
             console.log('wtf happened? ');
             console.log(response);
-            throw new Error('AppointmentsService: checkIn: failed to post checkin with ID ' + apmtId);
+            throw new Error('AppointmentsService: checkIn: failed to post checkin with ID ' + id + ' for ' + area);
         }
     } catch (error) {
         Taro.showToast({
@@ -103,6 +104,39 @@ const v_CheckIn = async (openId, v_id) => {
         }
         const response = await Taro.request({
             url: APPOINTMENT_VEHICLE_CHECKIN_URL,
+            method: 'POST',
+            data: {
+                openid: openId,
+                v_id: v_id
+            },
+            header: {
+                'content-type': 'application/json'
+            }
+        });
+        if (response.statusCode === 200) {
+            // checkin posted
+            return { success: true };
+        } else {
+            console.log('wtf happened? ');
+            console.log(response);
+            throw new Error('AppointmentsService: v_CheckIn: failed to post vehicle checkin with ID ' + v_id);
+        }
+    } catch (error) {
+        Taro.showToast({
+            title: error.message,
+            icon: 'error'
+        });
+        return { success: false, message: 'AppointmentsService: v_CheckIn: failed to post vehicle checkin' };
+    }
+};
+
+const j_CheckIn = async (openId, v_id) => {
+    try {
+        if (!openId) {
+            throw new Error('AppointmentsService: j_CheckIn: no openid found');
+        }
+        const response = await Taro.request({
+            url: APPOINTMENT_JOCKEY_CHECKIN_URL,
             method: 'POST',
             data: {
                 openid: openId,
@@ -239,36 +273,37 @@ const deleteAppointment = async (openId, apmt) => {
     }
 };
 
-const checkOut = async (openId, apmtId) => {
+const checkOut = async (openId, id, area) => {
     try {
-        if (!openId) {
-            throw new Error('AppointmentsService: checkOut: no openid found');
+        if (!openId || !id || !area) {
+            throw new Error('AppointmentsService: checkOut: missing parameter');
         }
         const response = await Taro.request({
             url: APPOINTMENT_CHECKOUT_URL,
             method: 'POST',
             data: {
-                openId: openId,
-                apmtId: apmtId
+                openid: openId,
+                id: id,
+                area: area
             },
             header: {
                 'content-type': 'application/json'
             }
         });
         if (response.statusCode === 200) {
-            // check-out posted
+            // checkin posted
             return { success: true };
         } else {
             console.log('wtf happened? ');
             console.log(response);
-            throw new Error('AppointmentsService: checkOut: failed to post checkout with ID ' + apmtId);
+            throw new Error('AppointmentsService: checkOut: failed to post check out with ID ' + id + ' for ' + area);
         }
     } catch (error) {
         Taro.showToast({
             title: error.message,
-            icon: 'none'
+            icon: 'error'
         });
-        return { success: false, message: 'AppointmentsService: checkOut: failed to post checkout' };
+        return { success: false, message: 'AppointmentsService: checkOut: failed to post check out' };
     }
 };
 

@@ -61,10 +61,10 @@ const AppointmentsPage = () => {
                 updateNotArrived(data.filter( apmt => {
                     const vehiclesStatus = vehiclesCheckedIn(apmt);
                     return (
-                        (!apmt.has_jockey && !apmt.jockey_checked_in && !vehiclesStatus) || 
-                        (apmt.has_jockey && !apmt.jockey_checked_in && !vehiclesStatus) ||
-                        (apmt.has_jockey && !apmt.jockey_checked_in && vehiclesStatus) ||
-                        (apmt.has_jockey && apmt.jockey_checked_in && !vehiclesStatus)
+                        (apmt.has_jockey == false && apmt.jockey_checked_in == false && !vehiclesStatus) || 
+                        (apmt.has_jockey == true && apmt.jockey_checked_in == false && !vehiclesStatus) ||
+                        (apmt.has_jockey == true && apmt.jockey_checked_in == false && vehiclesStatus) ||
+                        (apmt.has_jockey == true && apmt.jockey_checked_in == true && !vehiclesStatus)
                     );
             }));
                 updateArrived(data.filter( apmt => {
@@ -133,11 +133,7 @@ const AppointmentsPage = () => {
     const handleCheckInConfirm = async () => {
         showLoader();
         toggleCheckInModal(false);
-        let res;
-        switch (currentApmt.area) {
-            case 'security': res = await AppointmentsService.v_CheckIn(userData.openid, currentApmt.id); break;
-            //case 'jockey': res = await AppointmentsService.v_CheckIn(userData.openid, currentApmt.id); break;
-        }
+        const res = await AppointmentsService.checkIn(userData.openid, currentApmt.id, currentApmt.area);
         if (res && res.success) {
             Taro.showToast({
                 title: '签到成功',
@@ -168,11 +164,7 @@ const AppointmentsPage = () => {
     const handleCheckOutConfirm = async () => {
         showLoader();
         toggleCheckOutModal(false);
-        let res;
-        switch (currentApmt.area) {
-            case 'security': res = await AppointmentsService.v_CheckOut(userData.openid, currentApmt.id); break;
-            //case 'jockey': res = await AppointmentsService.v_CheckIn(userData.openid, currentApmt.id); break;
-        }
+        const res = await AppointmentsService.checkOut(userData.openid, currentApmt.id, currentApmt.area);
         if (res && res.success) {
             Taro.showToast({
                 title: '签离成功',

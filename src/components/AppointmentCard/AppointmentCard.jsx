@@ -1,6 +1,7 @@
 import React from 'react'
 import AdminCard from './AdminCard'
 import SecurityCard from './SecurityCard'
+import JockeyCard from './JockeyCard/JockeyCard'
 import { View } from '@tarojs/components'
 // import { AtCard, AtButton} from 'taro-ui'
 
@@ -12,6 +13,7 @@ const AppointmentCard = ( { department = null, note = undefined, apmtInfo, handl
         <View className='appointment-card'>
             <AdminCard apmtInfo={apmtInfo} today={today} handleEdit={handleEdit} />
             <SecurityCard apmtInfo={apmtInfo} today={today} handleCheckIn={handleCheckIn} handleCheckOut={handleCheckOut} />
+            <JockeyCard apmtInfo={apmtInfo} today={today} handleCheckIn={handleCheckIn} handleCheckOut={handleCheckOut} />
         </View>
     );
 };
