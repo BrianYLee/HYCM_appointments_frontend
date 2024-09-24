@@ -1,0 +1,19 @@
+.golf-card {
+    .extra-content {
+        display: inline-block;
+    }
+    .info {
+        text-align: right;
+    }
+    .infoListing {
+        margin-top: 12px;
+        margin-bottom: 12px;
+    }
+    .even {
+        background-color: #eeeeee;
+    }
+
+    .odd {
+        background-color: #dddddd;
+    }
+}

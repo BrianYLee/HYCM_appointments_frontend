@@ -17,6 +17,10 @@
     color: rgb(176, 0, 0);
 }
 
+.is-deleted {
+    text-decoration: line-through;
+}
+
 .at-modal__footer::before {
     border: none;
 }

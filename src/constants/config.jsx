@@ -1,6 +1,5 @@
 // base server url
 const BASE_URL = 'https://api.hyculturemedia.com';
-//const BASE_URL = 'http://localhost:3000';
 
 // appointments endpoint
 const APPOINTMENTS_ROUTE = '/appointments';

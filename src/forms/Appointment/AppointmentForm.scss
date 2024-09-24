@@ -29,12 +29,20 @@
     opacity: 1;
 }
 
+.vehicle-hidden {
+    display: none;
+}
+
 .text-input {
     margin-left: 35px;
     margin-right: 35px;
     margin-top: 20px;
     margin-bottom: 20px;
     //background-color: #ccc;
+}
+
+.plate-delete-btn {
+    margin: auto;
 }
 
 .submit-btn {

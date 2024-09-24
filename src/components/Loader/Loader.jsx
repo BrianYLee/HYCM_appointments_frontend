@@ -7,7 +7,7 @@ const Loader = () => {
     const { loading } = useLoader();
 
     return (
-        <AtToast duration={0} hasMask={true} status='loading' isOpened={loading} text="努力加载中～" />
+        <AtToast duration={10000} hasMask={true} status='loading' isOpened={loading} text="努力加载中~" />
     );
 };
 

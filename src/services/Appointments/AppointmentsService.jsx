@@ -1,5 +1,11 @@
 import Taro from '@tarojs/taro'
-import { APPOINTMENTS_URL, APPOINTMENT_CHECKIN_URL, APPOINTMENT_CHECKOUT_URL, APPOINTMENT_EDIT_URL, APPOINTMENT_DELETE_URL } from '../../constants/config';
+import {
+    APPOINTMENTS_URL,
+    APPOINTMENT_CHECKIN_URL,
+    APPOINTMENT_CHECKOUT_URL,
+    APPOINTMENT_EDIT_URL,
+    APPOINTMENT_DELETE_URL
+} from '../../constants/config';
 
 const getAppointments = async (openid, dateToFetch) => {
     try {
@@ -52,39 +58,6 @@ const postAppointment = async (openId, apmtObj) => {
             icon: 'error'
         });
         return { success: false, message: 'AppointmentsService: postAppointment: failed to post' };
-    }
-};
-
-const checkIn = async (openId, apmtId) => {
-    try {
-        if (!openId) {
-            throw new Error('AppointmentsService: checkIn: no openid found');
-        }
-        const response = await Taro.request({
-            url: APPOINTMENT_CHECKIN_URL,
-            method: 'POST',
-            data: {
-                openId: openId,
-                apmtId: apmtId
-            },
-            header: {
-                'content-type': 'application/json'
-            }
-        });
-        if (response.statusCode === 200) {
-            // checkin posted
-            return { success: true };
-        } else {
-            console.log('wtf happened? ');
-            console.log(response);
-            throw new Error('AppointmentsService: checkIn: failed to post checkin with ID ' + apmtId);
-        }
-    } catch (error) {
-        Taro.showToast({
-            title: error.message,
-            icon: 'error'
-        });
-        return { success: false, message: 'AppointmentsService: checkIn: failed to post checkin' };
     }
 };
 
@@ -165,36 +138,71 @@ const deleteAppointment = async (openId, apmt) => {
     }
 };
 
-const checkOut = async (openId, apmtId) => {
+const checkIn = async (openId, id, area) => {
     try {
-        if (!openId) {
-            throw new Error('AppointmentsService: checkOut: no openid found');
+        if (!openId || !id || !area) {
+            throw new Error('AppointmentsService: checkIn: missing parameter');
         }
         const response = await Taro.request({
-            url: APPOINTMENT_CHECKOUT_URL,
+            url: APPOINTMENT_CHECKIN_URL,
             method: 'POST',
             data: {
-                openId: openId,
-                apmtId: apmtId
+                openid: openId,
+                id: id,
+                area: area
             },
             header: {
                 'content-type': 'application/json'
             }
         });
         if (response.statusCode === 200) {
-            // check-out posted
+            // checkin posted
             return { success: true };
         } else {
             console.log('wtf happened? ');
             console.log(response);
-            throw new Error('AppointmentsService: checkOut: failed to post checkout with ID ' + apmtId);
+            throw new Error('AppointmentsService: checkIn: failed to post checkin with ID ' + id + ' for ' + area);
         }
     } catch (error) {
         Taro.showToast({
             title: error.message,
-            icon: 'none'
+            icon: 'error'
         });
-        return { success: false, message: 'AppointmentsService: checkOut: failed to post checkout' };
+        return { success: false, message: 'AppointmentsService: checkIn: failed to post checkin' };
+    }
+};
+
+const checkOut = async (openId, id, area) => {
+    try {
+        if (!openId || !id || !area) {
+            throw new Error('AppointmentsService: checkOut: missing parameter');
+        }
+        const response = await Taro.request({
+            url: APPOINTMENT_CHECKOUT_URL,
+            method: 'POST',
+            data: {
+                openid: openId,
+                id: id,
+                area: area
+            },
+            header: {
+                'content-type': 'application/json'
+            }
+        });
+        if (response.statusCode === 200) {
+            // checkin posted
+            return { success: true };
+        } else {
+            console.log('wtf happened? ');
+            console.log(response);
+            throw new Error('AppointmentsService: checkOut: failed to post check out with ID ' + id + ' for ' + area);
+        }
+    } catch (error) {
+        Taro.showToast({
+            title: error.message,
+            icon: 'error'
+        });
+        return { success: false, message: 'AppointmentsService: checkOut: failed to post check out' };
     }
 };
 

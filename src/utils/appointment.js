@@ -61,7 +61,7 @@ const determineKey = (key) => {
     if (key.includes('机构')) return 'studio_name';
     if (key == '摄影师' || key == '老师' || key == '拍摄老师' ) return 'manager_name';
     if (key == '客人' || key == '客人姓名' || key == '新人' || key == '新人名' || key == '新人姓名') return 'bridal_name';
-    if (key == '车牌' || key == '车牌号') return 'plate';
+    if (key == '车牌' || key == '车牌号') return 'vehicles';
     return null;
 }
 
@@ -88,7 +88,7 @@ const parseLine = (key, value) => {
     }
     if (parsedKey == 'areas') {
         let hasHorse = value.includes('马');
-        return { areas: value, horse: hasHorse};
+        return { areas: value, has_jockey: hasHorse};
     }
     if (parsedKey == 'studio_name') {
         return { studio_name: value };
@@ -99,8 +99,14 @@ const parseLine = (key, value) => {
     if (parsedKey == 'bridal_name') {
         return { bridal_name: value }
     }
-    if (parsedKey == 'plate') {
-        return { plate: value }
+    if (parsedKey == 'vehicles') {
+        const vehicles = value.split(/[,，、\s]+/).filter(Boolean).map((v_plate) => {
+            return {
+                plate: v_plate,
+                isNew: true
+            }
+        });
+        return { vehicles: vehicles }
     }
 }
 
@@ -117,4 +123,67 @@ export const parseAppointment = (input) => {
         }
     });
     return output;
+}
+
+const isValidDate = (dateToCheck) => {
+    const regex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!regex.test(dateToCheck)) {
+        return false;
+    }
+    const parts = dateToCheck.split("-");
+    const year = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10);
+    const day = parseInt(parts[2], 10);
+    const date = new Date(year, month - 1, day);
+    return date && (date.getMonth() + 1) === month && date.getDate() === day && date.getFullYear() === year;
+}
+
+export const validateForm = (formData) => {
+    const typeOpts = ['样片', '客片'];
+    let errors = { scheduled_date: false, type: false, has_jockey: false, studio_name: false, manager_name: false, vehicles: new Array(formData.vehicles.length).fill(false) };
+    let hasError = false;
+    if (!formData.scheduled_date || !isValidDate(formData.scheduled_date)) {
+        errors.scheduled_date = true;
+        hasError = true;
+    }
+    if (!typeOpts.includes(formData.type)) {
+        errors.type = true;
+        hasError = true;
+    }
+    if (formData.has_jockey === null ) {
+        errors.has_jockey = true;
+        hasError = true;
+    }
+    if (!formData.studio_name || formData.studio_name.length < 2) {
+        errors.studio_name = true;
+        hasError = true;
+    }
+    if (!formData.manager_name || formData.manager_name.length < 2) {
+        errors.manager_name = true;
+        hasError = true;
+    }
+    formData.vehicles.map((v, idx) => {
+        console.log('checking plate ' + v?.plate + ' index ' + idx);
+        if (!v?.isDeleted && (v?.plate == undefined || v?.plate == null || v?.plate == '' || v?.plate.length < 7)) {
+            if (v?.plate != '待定') {
+                console.log('bad plate');
+                errors.vehicles[idx] = true;
+                hasError = true;
+            }
+        }
+    });
+    return { 
+        hasError,
+        errors
+    };
+}
+
+export const keyToString = (input) => {
+    if (input == 'areas') return '拍摄区域';
+    if (input == 'bridal_name') return '新人姓名';
+    if (input == 'created_date') return '添加日期';
+    if (input == 'manager_name') return '摄影师';
+    if (input == 'scheduled_time_string') return '拍摄时间';
+    if (input == 'studio_name') return '机构名称';
+    if (input == 'type') return '';
 }
