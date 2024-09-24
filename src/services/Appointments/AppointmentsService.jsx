@@ -211,8 +211,6 @@ export default {
     postAppointment,
     checkIn,
     checkOut,
-    v_CheckIn,
-    v_CheckOut,
     getAppointment,
     editAppointment,
     deleteAppointment
