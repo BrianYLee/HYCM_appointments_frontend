@@ -491,7 +491,7 @@ const AppointmentForm = () => {
             <View className='form-container'>
                     { editMode && (<AtSwitch title='酒店签到' checked={formData.hotel_checked_in} onChange={(value) => handleInput(value, 'hotel_checked_in')} />)}
                     { editMode && (<AtSwitch title='高尔夫签到' checked={formData.golf_checked_in} onChange={(value) => handleInput(value, 'golf_checked_in')} />)}
-                    { editMode && (<AtSwitch title='签到' checked={formData.jockey_checked_in} onChange={(value) => handleInput(value, 'jockey_checked_in')} />)}
+                    { editMode && (<AtSwitch title='马会签到' checked={formData.jockey_checked_in} onChange={(value) => handleInput(value, 'jockey_checked_in')} />)}
                     <AtInput
                         error={formErrors.type}
                         name='type'
