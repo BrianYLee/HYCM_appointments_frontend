@@ -33,10 +33,6 @@ const SalesCard = ({ apmtInfo }) => {
                     <View className='at-col at-col__offset-1 infoListing info'>{apmtInfo.bridal_name !== undefined && (apmtInfo.bridal_name || '未填')}</View>
                 </View>
                 <View className='at-row at-row__align--center odd'>
-                    <View className='at-col at-col-1 at-col--auto infoListing'>{apmtInfo.created_date && '添加日期'}</View>
-                    <View className='at-col at-col__offset-1 infoListing info'>{apmtInfo.created_date && (apmtInfo.created_date)}</View>
-                </View>
-                <View className='at-row at-row__align--center even'>
                     <View className='at-col at-col-1 at-col--auto infoListing'>车辆信息</View>
                     <View className='at-col at-col__offset-1 infoListing info'>{apmtInfo.vehicles.map(vehicle => (
                         <View className='at-row at-row__align--center'>
