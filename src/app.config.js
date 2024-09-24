@@ -1,4 +1,5 @@
 export default {
+    lazyCodeLoading: "requiredComponents",
     pages: [
         "pages/Welcome/index",
         "pages/Registration/index",
