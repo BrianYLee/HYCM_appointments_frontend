@@ -3,8 +3,6 @@ import {
     APPOINTMENTS_URL,
     APPOINTMENT_CHECKIN_URL,
     APPOINTMENT_CHECKOUT_URL,
-    APPOINTMENT_VEHICLE_CHECKIN_URL,
-    APPOINTMENT_VEHICLE_CHECKOUT_URL,
     APPOINTMENT_EDIT_URL,
     APPOINTMENT_DELETE_URL
 } from '../../constants/config';
@@ -60,139 +58,6 @@ const postAppointment = async (openId, apmtObj) => {
             icon: 'error'
         });
         return { success: false, message: 'AppointmentsService: postAppointment: failed to post' };
-    }
-};
-
-const checkIn = async (openId, id, area) => {
-    try {
-        if (!openId || !id || !area) {
-            throw new Error('AppointmentsService: checkIn: missing parameter');
-        }
-        const response = await Taro.request({
-            url: APPOINTMENT_CHECKIN_URL,
-            method: 'POST',
-            data: {
-                openid: openId,
-                id: id,
-                area: area
-            },
-            header: {
-                'content-type': 'application/json'
-            }
-        });
-        if (response.statusCode === 200) {
-            // checkin posted
-            return { success: true };
-        } else {
-            console.log('wtf happened? ');
-            console.log(response);
-            throw new Error('AppointmentsService: checkIn: failed to post checkin with ID ' + id + ' for ' + area);
-        }
-    } catch (error) {
-        Taro.showToast({
-            title: error.message,
-            icon: 'error'
-        });
-        return { success: false, message: 'AppointmentsService: checkIn: failed to post checkin' };
-    }
-};
-
-const v_CheckIn = async (openId, v_id) => {
-    try {
-        if (!openId) {
-            throw new Error('AppointmentsService: v_CheckIn: no openid found');
-        }
-        const response = await Taro.request({
-            url: APPOINTMENT_VEHICLE_CHECKIN_URL,
-            method: 'POST',
-            data: {
-                openid: openId,
-                v_id: v_id
-            },
-            header: {
-                'content-type': 'application/json'
-            }
-        });
-        if (response.statusCode === 200) {
-            // checkin posted
-            return { success: true };
-        } else {
-            console.log('wtf happened? ');
-            console.log(response);
-            throw new Error('AppointmentsService: v_CheckIn: failed to post vehicle checkin with ID ' + v_id);
-        }
-    } catch (error) {
-        Taro.showToast({
-            title: error.message,
-            icon: 'error'
-        });
-        return { success: false, message: 'AppointmentsService: v_CheckIn: failed to post vehicle checkin' };
-    }
-};
-
-const j_CheckIn = async (openId, v_id) => {
-    try {
-        if (!openId) {
-            throw new Error('AppointmentsService: j_CheckIn: no openid found');
-        }
-        const response = await Taro.request({
-            url: APPOINTMENT_JOCKEY_CHECKIN_URL,
-            method: 'POST',
-            data: {
-                openid: openId,
-                v_id: v_id
-            },
-            header: {
-                'content-type': 'application/json'
-            }
-        });
-        if (response.statusCode === 200) {
-            // checkin posted
-            return { success: true };
-        } else {
-            console.log('wtf happened? ');
-            console.log(response);
-            throw new Error('AppointmentsService: v_CheckIn: failed to post vehicle checkin with ID ' + v_id);
-        }
-    } catch (error) {
-        Taro.showToast({
-            title: error.message,
-            icon: 'error'
-        });
-        return { success: false, message: 'AppointmentsService: v_CheckIn: failed to post vehicle checkin' };
-    }
-};
-
-const v_CheckOut = async (openId, v_id) => {
-    try {
-        if (!openId) {
-            throw new Error('AppointmentsService: checkOut: no openid found');
-        }
-        const response = await Taro.request({
-            url: APPOINTMENT_VEHICLE_CHECKOUT_URL,
-            method: 'POST',
-            data: {
-                openid: openId,
-                v_id: v_id
-            },
-            header: {
-                'content-type': 'application/json'
-            }
-        });
-        if (response.statusCode === 200) {
-            // check-out posted
-            return { success: true };
-        } else {
-            console.log('wtf happened? ');
-            console.log(response);
-            throw new Error('AppointmentsService: v_CheckOut: failed to post checkout with ID ' + v_id);
-        }
-    } catch (error) {
-        Taro.showToast({
-            title: error.message,
-            icon: 'none'
-        });
-        return { success: false, message: 'AppointmentsService: v_CheckOut: failed to post vehicle checkout' };
     }
 };
 
@@ -270,6 +135,40 @@ const deleteAppointment = async (openId, apmt) => {
             icon: 'error'
         });
         return { success: false, message: 'AppointmentsService: deleteAppointment: failed to post' };
+    }
+};
+
+const checkIn = async (openId, id, area) => {
+    try {
+        if (!openId || !id || !area) {
+            throw new Error('AppointmentsService: checkIn: missing parameter');
+        }
+        const response = await Taro.request({
+            url: APPOINTMENT_CHECKIN_URL,
+            method: 'POST',
+            data: {
+                openid: openId,
+                id: id,
+                area: area
+            },
+            header: {
+                'content-type': 'application/json'
+            }
+        });
+        if (response.statusCode === 200) {
+            // checkin posted
+            return { success: true };
+        } else {
+            console.log('wtf happened? ');
+            console.log(response);
+            throw new Error('AppointmentsService: checkIn: failed to post checkin with ID ' + id + ' for ' + area);
+        }
+    } catch (error) {
+        Taro.showToast({
+            title: error.message,
+            icon: 'error'
+        });
+        return { success: false, message: 'AppointmentsService: checkIn: failed to post checkin' };
     }
 };
 
