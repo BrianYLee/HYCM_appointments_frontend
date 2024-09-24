@@ -11,6 +11,7 @@ export const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isEmployee, setIsEmployee] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
+    const [department, setDepartment] = useState(null);
     const [userData, setUserData] = useState({});
 
     const { showLoader, hideLoader } = useLoader();
@@ -46,7 +47,7 @@ export const AuthProvider = ({ children }) => {
     const wechat_login = async (code) => {
         try {
             //setAuthLoading(true);
-            const { success, message, openId, isEmployee, employee_name, department } = await AuthService.login(code);
+            const { success, openId, isEmployee, employee_name, department } = await AuthService.login(code);
             const newUserData = {
                 openid: openId,
                 isEmployee: isEmployee,
@@ -55,6 +56,7 @@ export const AuthProvider = ({ children }) => {
             };
             setIsAuthenticated(prev => prev = success);
             setIsEmployee(prev => prev = isEmployee);
+            setDepartment(prev => prev = department);
             if(department == 'admin') {
                 setIsAdmin(prev => prev = true);
             }
@@ -74,7 +76,7 @@ export const AuthProvider = ({ children }) => {
     const wechat_renew = async (openid) => {
         try {
             setAuthLoading(true);
-            const {success, message, openId, isEmployee, employee_name, department } = await AuthService.renew(openid);
+            const {success, openId, isEmployee, employee_name, department } = await AuthService.renew(openid);
             const newUserData = {
                 openid: openId,
                 isEmployee: isEmployee,
@@ -83,6 +85,7 @@ export const AuthProvider = ({ children }) => {
             }
             setIsAuthenticated(prev => prev = success);
             setIsEmployee(prev => prev = isEmployee);
+            setDepartment(prev => prev = department);
             if(department == 'admin') {
                 setIsAdmin(prev => prev = true);
             }
@@ -109,6 +112,7 @@ export const AuthProvider = ({ children }) => {
         Taro.removeStorageSync('userInfo');
         setIsAuthenticated(prev => prev = false);
         setIsEmployee(prev => prev = false);
+        setDepartment(prev => prev = null);
         setUserData({});
         Taro.reLaunch({
             url: '/pages/Welcome/index'
@@ -142,7 +146,7 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, isEmployee, isAdmin, userData, handleLogin, logout, checkAuthStatus, authLoading }}>
+        <AuthContext.Provider value={{ isAuthenticated, department, isEmployee, isAdmin, userData, handleLogin, logout, checkAuthStatus, authLoading }}>
             {children}
         </AuthContext.Provider>
     );
