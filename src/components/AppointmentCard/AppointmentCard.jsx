@@ -19,6 +19,7 @@ const AppointmentCard = ( { department = null, note = undefined, apmtInfo, handl
             {department == ROLES.JOCKEY && (<JockeyCard apmtInfo={apmtInfo} today={today} handleCheckIn={handleCheckIn} handleCheckOut={handleCheckOut} />)}
             {department == ROLES.GOLF && (<GolfCard apmtInfo={apmtInfo} today={today} handleCheckIn={handleCheckIn} handleCheckOut={handleCheckOut} />)}
             {department == ROLES.HOTEL && (<HotelCard apmtInfo={apmtInfo} today={today} handleCheckIn={handleCheckIn} handleCheckOut={handleCheckOut} />)}
+            {department == ROLES.OTHER && (<SalesCard apmtInfo={apmtInfo} />)}
         </View>
     );
 };

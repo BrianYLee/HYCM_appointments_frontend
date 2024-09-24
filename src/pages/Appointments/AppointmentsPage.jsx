@@ -90,6 +90,11 @@ const AppointmentsPage = () => {
                 updateNotArrived(data.filter( apmt => !apmt.jockey_checked_in == true));
                 updateArrived(data.filter( apmt => apmt.jockey_checked_in == true));
                 break;
+            case ROLES.HOTEL:
+                updateAppointments(data);
+                updateNotArrived(data.filter( apmt => !apmt.hotel_checked_in == true));
+                updateArrived(data.filter( apmt => apmt.hotel_checked_in == true));
+                break;
             case ROLES.SALES:
                 // WIP
                 updateAppointments(data);
