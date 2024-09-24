@@ -11,6 +11,7 @@ import { View, Text, Image } from '@tarojs/components';
 import { AtDivider, AtTabs, AtTabsPane } from 'taro-ui'
 import Loader from '../../components/Loader';
 import { REFRESH_APMTS } from '../../constants/events';
+import { ROLES } from '../../constants/roles';
 
 import { useLoader } from '../../context/LoaderContext';
 import { useAuth } from '../../context/AuthContext';
@@ -19,7 +20,7 @@ import { useAuth } from '../../context/AuthContext';
 import './AppointmentsPage.scss'
 
 const AppointmentsPage = () => {
-    const { isAuthenticated, isEmployee, isAdmin, userData, authLoading } = useAuth();
+    const { isAuthenticated, department, isEmployee, isAdmin, userData, authLoading } = useAuth();
     if ( !isAuthenticated && authLoading) {
         return (<Loader />);
     }
@@ -38,18 +39,77 @@ const AppointmentsPage = () => {
     const [ appointments, updateAppointments ] = useState([]);
     const [ notArrived, updateNotArrived ] = useState([]);
     const [ arrived, updateArrived ] = useState([]);
-    const [ currentApmt, updateCurrentApmt ] = useState({});
+    const [ currentApmt, updateCurrentApmt ] = useState({area: null, id: null, content: '无信息'});
+    const tabList = [{ title: `未签到 (${notArrived.length})` }, { title: `已签到 (${arrived.length})` }, { title: `全部 (${appointments.length})` }];
+
+    // check-in/out modal states
     const [ showCheckInModal, toggleCheckInModal ] = useState(false);
     const [ showCheckOutModal, toggleCheckOutModal ] = useState(false);
 
+    const buildTabLists = (data) => {
+        // WIP build lists for individual department.
+        const vehiclesCheckedIn = (apmt) => {
+            if (!apmt || !apmt.vehicles) return false;
+            for(let vehicle of apmt.vehicles) {
+                if (vehicle.checked_in == false) return false
+            }
+            return true;
+        };
+        switch (department) {
+            case ROLES.ADMIN:
+                updateAppointments(data);
+                updateNotArrived(data.filter( apmt => {
+                    const vehiclesStatus = vehiclesCheckedIn(apmt);
+                    return (
+                        (!apmt.has_jockey && !apmt.jockey_checked_in && !vehiclesStatus) || 
+                        (apmt.has_jockey && !apmt.jockey_checked_in && !vehiclesStatus) ||
+                        (apmt.has_jockey && !apmt.jockey_checked_in && vehiclesStatus) ||
+                        (apmt.has_jockey && apmt.jockey_checked_in && !vehiclesStatus)
+                    );
+            }));
+                updateArrived(data.filter( apmt => {
+                    const vehiclesStatus = vehiclesCheckedIn(apmt);
+                    return (
+                        (!apmt.has_jockey && vehiclesStatus) || 
+                        (apmt.has_jockey && apmt.jockey_checked_in && vehiclesStatus)
+                    );
+                }));
+                break;
+            case ROLES.SECURITY:
+                updateAppointments(data);
+                updateNotArrived(data.filter( apmt => !vehiclesCheckedIn(apmt)));
+                updateArrived(data.filter( apmt => vehiclesCheckedIn(apmt)));
+                break;
+            case ROLES.GOLF:
+                updateAppointments(data);
+                updateNotArrived(data.filter( apmt => !apmt.golf_checked_in == true));
+                updateArrived(data.filter( apmt => apmt.golf_checked_in == true));
+                break;
+            case ROLES.JOCKEY:
+                updateAppointments(data);
+                updateNotArrived(data.filter( apmt => !apmt.jockey_checked_in == true));
+                updateArrived(data.filter( apmt => apmt.jockey_checked_in == true));
+                break;
+            case ROLES.SALES:
+                // WIP
+                updateAppointments(data);
+                updateNotArrived(data.filter( apmt => !vehiclesCheckedIn(apmt)));
+                updateArrived(data.filter( apmt => vehiclesCheckedIn(apmt)));
+                break;
+            case ROLES.OTHER:
+                // WIP
+                updateAppointments(data);
+                updateNotArrived(data.filter( apmt => !vehiclesCheckedIn(apmt)));
+                updateArrived(data.filter( apmt => vehiclesCheckedIn(apmt)));
+                break;
+        }
+    }
     // request appointments data
     const fetchAndSetAppointments = async (dateToFetch) => {
         showLoader();
         const res = await AppointmentsService.getAppointments(userData.openid, dateToFetch || currentDate);
         if (res && res.success) {
-            updateAppointments(res.data);
-            updateNotArrived(res.data.filter( apmt => !apmt.checked_in));
-            updateArrived(res.data.filter( apmt => apmt.checked_in));
+            buildTabLists(res.data);
         }
         hideLoader();
     };
@@ -65,14 +125,19 @@ const AppointmentsPage = () => {
         }
     }
     // checkin functions
-    const handleCheckIn = (apmtObj) => {
-        updateCurrentApmt(apmtObj);
+    const handleCheckIn = (data) => {
+        updateCurrentApmt({ ...data });
         toggleCheckInModal(true);
     }
+
     const handleCheckInConfirm = async () => {
         showLoader();
         toggleCheckInModal(false);
-        const res = await AppointmentsService.checkIn(userData.openid, currentApmt.id);
+        let res;
+        switch (currentApmt.area) {
+            case 'security': res = await AppointmentsService.v_CheckIn(userData.openid, currentApmt.id); break;
+            //case 'jockey': res = await AppointmentsService.v_CheckIn(userData.openid, currentApmt.id); break;
+        }
         if (res && res.success) {
             Taro.showToast({
                 title: '签到成功',
@@ -103,7 +168,11 @@ const AppointmentsPage = () => {
     const handleCheckOutConfirm = async () => {
         showLoader();
         toggleCheckOutModal(false);
-        const res = await AppointmentsService.checkOut(userData.openid, currentApmt.id);
+        let res;
+        switch (currentApmt.area) {
+            case 'security': res = await AppointmentsService.v_CheckOut(userData.openid, currentApmt.id); break;
+            //case 'jockey': res = await AppointmentsService.v_CheckIn(userData.openid, currentApmt.id); break;
+        }
         if (res && res.success) {
             Taro.showToast({
                 title: '签离成功',
@@ -163,15 +232,15 @@ const AppointmentsPage = () => {
         }
     }, []);
 
-    const tabList = [{ title: `未签到 (${notArrived.length})` }, { title: `已签到 (${arrived.length})` }, { title: `全部 (${appointments.length})` }]
     return (
         <View className='index'>
             <Loader />
             <CalendarTab currentDate={currentDate} handleDateChange={handleDateChange} handleRefresh={refresh} handleNewAppointment={isAdmin && handleNewAppointment} ></CalendarTab>
             <Modal
                 isOpened={showCheckInModal}
-                title='请确认车牌号'
-                contents={[{className: '.at-article__h1 plateNumber', text: currentApmt.plate}]}
+                title='确认签到信息'
+                contents={[
+                    {className: '.at-article__h1 plateNumber', text: currentApmt.content}]}
                 cancelText='取消'
                 confirmText='确定'
                 onClose={handleCancel}
@@ -180,10 +249,10 @@ const AppointmentsPage = () => {
             />
             <Modal
                 isOpened={showCheckOutModal}
-                title='请确取消签到'
+                title='取消签到'
                 contents={[
                     {className: '.at-article__h2 plateNumber', text: '确认要取消签到？'},
-                    {className: '.at-article__h1 plateNumber', text: currentApmt.plate}
+                    {className: '.at-article__h1 plateNumber', text: currentApmt.content}
                 ]}
                 cancelText='返回'
                 confirmText='取消签到'
@@ -195,7 +264,7 @@ const AppointmentsPage = () => {
                 <AtTabsPane current={currentTab} index={0} >
                     {notArrived.length > 0 ? (
                         notArrived.map(( appointment ) => (
-                            <AppointmentCard apmtInfo={appointment} handleCheckIn={handleCheckIn} handleCheckOut={handleCheckOut} handleEdit={handleEdit} today={today}/>
+                            <AppointmentCard department={department} apmtInfo={appointment} handleCheckIn={handleCheckIn} handleCheckOut={handleCheckOut} handleEdit={handleEdit} today={today}/>
                         ))
                     ) : (
                     <View className='no-records'>
@@ -208,7 +277,7 @@ const AppointmentsPage = () => {
                 <AtTabsPane current={currentTab} index={1}>
                     {arrived.length > 0 ? (
                         arrived.map(( appointment ) => (
-                            <AppointmentCard apmtInfo={appointment} handleCheckIn={handleCheckIn} handleCheckOut={handleCheckOut} handleEdit={handleEdit} today={today}/>
+                            <AppointmentCard department={department} apmtInfo={appointment} handleCheckIn={handleCheckIn} handleCheckOut={handleCheckOut} handleEdit={handleEdit} today={today}/>
                         ))
                     ) : (
                     <View className='no-records'>
@@ -221,7 +290,7 @@ const AppointmentsPage = () => {
                 <AtTabsPane current={currentTab} index={2}>
                     {appointments.length > 0 ? (
                         appointments.map(( appointment ) => (
-                            <AppointmentCard apmtInfo={appointment} handleCheckIn={handleCheckIn} handleCheckOut={handleCheckOut} handleEdit={handleEdit} today={today}/>
+                            <AppointmentCard department={department} apmtInfo={appointment} handleCheckIn={handleCheckIn} handleCheckOut={handleCheckOut} handleEdit={handleEdit} today={today}/>
                         ))
                     ) : (
                     <View className='no-records'>
