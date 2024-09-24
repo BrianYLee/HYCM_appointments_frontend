@@ -13,8 +13,8 @@ const SalesCard = ({ apmtInfo }) => {
                 title={`${apmtInfo?.studio_name} - ${apmtInfo?.manager_name}`}
             >
                 <View className='at-row at-row__align--center even'>
-                    <View className='at-col at-col-1 at-col--auto infoListing'>{apmtInfo.type && '类型'}</View>
-                    <View className='at-col at-col__offset-1 infoListing info'>{apmtInfo.type && (apmtInfo.type)}</View>
+                    <View className='at-col at-col-1 at-col--auto infoListing'>类型</View>
+                    <View className='at-col at-col__offset-1 infoListing info'>{apmtInfo?.type}</View>
                 </View>
                 <View className='at-row at-row__align--center odd'>
                     <View className='at-col at-col-1 at-col--auto infoListing'>{apmtInfo.scheduled_time_string !== undefined && '拍摄时间'}</View>
