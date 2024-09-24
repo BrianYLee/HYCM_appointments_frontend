@@ -28,7 +28,7 @@ const AdminCard = ({ apmtInfo, today, handleEdit }) => {
                 </View>
                 <View className='at-row at-row__align--center odd'>
                     <View className='at-col at-col-1 at-col--auto infoListing'>{apmtInfo.has_jockey && '马会预约'}</View>
-                    <View className='at-col at-col__offset-1 infoListing info'>{apmtInfo.has_jockey ? '有' : '没有'}</View>
+                    <View className='at-col at-col__offset-1 infoListing info'>{apmtInfo.has_jockey ? `有 ${apmtInfo.jockey_checked_in ? '已签到' : '未签到'}` : '没有'}</View>
                 </View>
                 <View className='at-row at-row__align--center even'>
                     <View className='at-col at-col-1 at-col--auto infoListing'>{apmtInfo.bridal_name !== undefined && '新人姓名'}</View>
