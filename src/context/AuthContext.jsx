@@ -63,11 +63,15 @@ export const AuthProvider = ({ children }) => {
             setUserData(newUserData);
             Taro.setStorageSync('userInfo', newUserData);
         } catch (error) {
+            setIsAuthenticated(false);
+            setIsEmployee(false);
+            setDepartment(null);
+            setUserData(null);
             Taro.showToast({
                 title: 'Login failed',
                 icon: 'fail',
                 duration: 2000
-            })
+            });
         } finally {
             //setAuthLoading(false);
         }
@@ -94,7 +98,8 @@ export const AuthProvider = ({ children }) => {
         } catch (error) {
             setIsAuthenticated(false);
             setIsEmployee(false);
-            setUserData({});
+            setDepartment(null);
+            setUserData(null);
             Taro.removeStorageSync('userInfo');
             Taro.showToast({
                 title: 'renew failed',
@@ -155,4 +160,3 @@ export const AuthProvider = ({ children }) => {
 export const useAuth = () => {
     return useContext(AuthContext);
 };
-

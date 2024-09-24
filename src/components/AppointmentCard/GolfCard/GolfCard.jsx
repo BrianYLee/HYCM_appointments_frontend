@@ -16,16 +16,16 @@ const GolfCard = ({ apmtInfo, handleCheckIn, handleCheckOut }) => {
                     <AtButton
                         circle
                         size='small'
-                        type={apmtInfo.jockey_checked_in
+                        type={apmtInfo.golf_checked_in
                             ? 'secondary'
                             : 'primary'
                         }
-                        onClick={apmtInfo.jockey_checked_in
+                        onClick={apmtInfo.golf_checked_in
                             ? () => handleCheckOut({area: 'golf', id: apmtInfo.id, content: `${apmtInfo.studio_name} ${apmtInfo.manager_name}`})
                             : () => handleCheckIn({area: 'golf', id: apmtInfo.id, content: `${apmtInfo.studio_name} ${apmtInfo.manager_name}`})
                         }
                     >
-                        {apmtInfo.jockey_checked_in ? '取消签到' : '签到'}
+                        {apmtInfo.golf_checked_in ? '取消签到' : '签到'}
                     </AtButton>
                 }
             >
