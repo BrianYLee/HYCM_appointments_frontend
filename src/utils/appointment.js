@@ -100,7 +100,13 @@ const parseLine = (key, value) => {
         return { bridal_name: value }
     }
     if (parsedKey == 'vehicles') {
-        return { vehicles: value.split(/[,，、\s]+/).filter(Boolean) }
+        const vehicles = value.split(/[,，、\s]+/).filter(Boolean).map((v_plate) => {
+            return {
+                plate: v_plate,
+                isNew: true
+            }
+        });
+        return { vehicles: vehicles }
     }
 }
 
