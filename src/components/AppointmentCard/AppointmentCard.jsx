@@ -7,11 +7,11 @@ import { View } from '@tarojs/components'
 // styling
 import './AppointmentCard.scss'
 
-const AppointmentCard = ( { note = undefined, apmtInfo, handleCheckIn, handleCheckOut, handleEdit=() => null, today } ) => {
+const AppointmentCard = ( { department = null, note = undefined, apmtInfo, handleCheckIn, handleCheckOut, handleEdit=() => null, today } ) => {
     return (
         <View className='appointment-card'>
             <AdminCard apmtInfo={apmtInfo} today={today} handleEdit={handleEdit} />
-            <SecurityCard apmtInfo={apmtInfo} today={today} handleEdit={handleEdit} />
+            <SecurityCard apmtInfo={apmtInfo} today={today} handleCheckIn={handleCheckIn} handleCheckOut={handleCheckOut} />
         </View>
     );
 };
